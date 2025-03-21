@@ -15,7 +15,7 @@
 **Here's a recommended format and some reasoning:**
 
 ```bash
-#0.0.22: Address issue #0022 (#FIX_0022) @DAVIt
+#0.0.22: Address issue #0022 (#FIX_0022) @DavitTec
 ```
 
 #### Breakdown and Explanation
@@ -29,17 +29,17 @@
 3. Issue Identifier (#FIX_0022):
    - Including #FIX_0022 ties it to an entry in your Issues.md. The parentheses (#FIX_0022) set it apart visually while keeping it associated with the issue number.
    - GitHub doesn’t autolink custom tags like #FIX_0022 unless explicitly defined in a workflow or script, but it’s still useful for your project’s internal tracking.
-4. User Tag (@DAVIt):
-   - The @DAVIt syntax works perfectly for GitHub, autolinking to a GitHub user. For an X user like @_davit, it won’t hyperlink in GitHub but will still be recognizable in other contexts (e.g., if shared on X).
+4. User Tag (@DavitTec):
+   - The @DavitTec syntax works perfectly for GitHub, autolinking to a GitHub user. For an X user like @_davit, it won’t hyperlink in GitHub but will still be recognizable in other contexts (e.g., if shared on X).
    - Place it last for consistency and to avoid cluttering the core message.
 
 #### Full Example
 
 ```
-#0.0.22: Address issue #0022 (#FIX_0022) @DAVIt
+#0.0.22: Address issue #0022 (#FIX_0022) @@DavitTec
 ```
 
-- **In GitHub**: #0022 links to issue/PR #0022, and @DAVIt links to the GitHub user.
+- **In GitHub**: #0022 links to issue/PR #0022, and @DavitTec links to the GitHub user.
 - **In VS Code**: The # tags are often clickable if you have GitLens or similar extensions installed.
 - **In CHANGELOG**: #0022 can correspond to a heading like ## 0022 in CHANGELOG.md.
 - **In Issues.md**: #FIX_0022 can be a searchable tag or reference.
@@ -48,14 +48,14 @@
 
 - **Version Out of Sync**: If branches diverge, the version (e.g., #0.0.22) might not match the final merged version. Consider updating it during a rebase or merge to the main branch.
 - **Issue Numbers**: #0022 will stay consistent as long as it matches an open GitHub issue/PR. Ensure your Issues.md entry (#FIX_0022) aligns with this.
-- **User Tags**: @DAVIt won’t break even if the user changes their GitHub handle, though it might not link correctly if mistyped.
+- **User Tags**: @DavitTec won’t break even if the user changes their GitHub handle, though it might not link correctly if mistyped.
 
 #### Alternative Format (More Verbose)
 
 If you want more detail or flexibility:
 
 ```
-#0.0.22: Fix issue #0022 in CHANGELOG (#FIX_0022) by @DAVIt
+#0.0.22: Fix issue #0022 in CHANGELOG (#FIX_0022) by @DavitTec
 ```
 
 This adds a verb ("Fix") and context ("in CHANGELOG"), which might help when reviewing logs later.
