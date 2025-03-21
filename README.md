@@ -2,7 +2,7 @@
 
 🔥 Script and templates to help you Create README.md's.
 
-Version 0.0.1
+Version 0.0.2
 
 ## Purpose
 
@@ -24,4 +24,12 @@ chmod +x create-readme.sh
 
 ## Development Notes
 
+## Licence
+
+See [MIT](./LICENSE)
+
 ## References
+
+See [HELP](docs/help.md)
+See [ISSUES](docs/issues.md)
+See [ToDo](docs/ToDo.md)
