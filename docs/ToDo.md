@@ -2,6 +2,8 @@
 
 ---
 
+- [ ] Adding Scritps folder with
+  - [ ] [Insert_Readme](./scripts/Insert_Readme)
 - [x] Create [Todo.md](ToDo.md)
 
 - [ ] Add social media preview image
@@ -12,5 +14,4 @@
 ​	[Download template](./assets/repository-open-graph-template.png)
 
 - [ ] Create **[CHANGELOG](../CHANGELOG.md)** and script for auto versioning 
-- [x] Add Icons
-
+- [x] Add Icon
