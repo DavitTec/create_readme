@@ -1,0 +1,23 @@
+{
+  "name": "create_readme",
+  "version": "0.0.3-0",
+  "description": "Script and templates to help you Create README.md's.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version",
+    "prelease": "standard-version -p "
+  },
+  "keywords": [
+    "readme",
+    "developemnt",
+    "coding",
+    "node"
+  ],
+  "author": "Davit Mullsin (x/@_davit github@DavitTec)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.6.5",
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  }
+}
