@@ -73,7 +73,7 @@ This adds a verb ("Fix") and context ("in CHANGELOG"), which might help when rev
 
 GitHub’s autolinking features are designed to enhance workflow efficiency by automatically converting specific text patterns into clickable hyperlinks within a repository. These features save time, improve navigation, and connect GitHub content (like issues, pull requests, and commits) to both internal GitHub resources and external systems. Below, I’ll explain all of GitHub’s autolinking capabilities, based on how they work as of March 21, 2025.
 
-### 1. **Built-in Autolinking (Native GitHub References)**
+#### 1. **Built-in Autolinking (Native GitHub References)**
 GitHub automatically recognizes and links certain references within comments, issues, pull requests, commit messages, and other Markdown-supported areas. These are native to GitHub and require no configuration:
 
 - **Issues and Pull Requests**:
@@ -98,7 +98,7 @@ GitHub automatically recognizes and links certain references within comments, is
 
 These built-in autolinks are seamless and work across GitHub’s interface without setup, leveraging its Markdown renderer (GitHub Flavored Markdown, or GFM).
 
-### 2. **Custom Autolink References (External Resources)**
+#### 2. **Custom Autolink References (External Resources)**
 For linking to external systems like Jira, Zendesk, or Trello, GitHub offers configurable **custom autolink references**. This feature is available in repositories under GitHub Pro, Team, Enterprise Cloud, and Enterprise Server plans. Here’s how it works:
 
 - **Configuration**:
@@ -122,7 +122,7 @@ For linking to external systems like Jira, Zendesk, or Trello, GitHub offers con
 
 This is ideal for integrating GitHub with external tools, reducing manual linking effort.
 
-### 3. **Autolinking Behavior in Context**
+#### 3. **Autolinking Behavior in Context**
 - **Where It Works**:
   - Issues, pull requests, discussions, commit messages, PR descriptions, and comments.
   - Markdown files in the repo (e.g., `README.md`) when viewed rendered.
@@ -135,7 +135,7 @@ This is ideal for integrating GitHub with external tools, reducing manual linkin
 - **Unfurling**:
   - In task lists, issue/PR references (e.g., `- [ ] #123`) expand to show the title and state (e.g., “Fix bug #123 - Open”).
 
-### 4. **Advanced Notes and Edge Cases**
+#### 4. **Advanced Notes and Edge Cases**
 - **Sync Across Branches**:
   - Autolinks like `#123` always point to the current state of that issue/PR, regardless of branch. If an issue is closed or merged, the link reflects that.
 
@@ -148,17 +148,33 @@ This is ideal for integrating GitHub with external tools, reducing manual linkin
 - **Performance**:
   - Built-in links are instant; custom autolinks rely on correct prefix setup and don’t impact rendering speed.
 
-### Practical Example
+#### Practical Example
 For your `create_readme` script commit:
 - Native: `#0022` links to issue #0022, `@DavitTec` tags the user.
 - Custom: Configure `FIX-` to `https://yourdomain.com/issues/FIX-<num>`. Then `FIX-0022` in the message links externally.
 
-### Why It Matters
+#### Why It Matters
 - **Efficiency**: No need to paste full URLs manually.
 - **Traceability**: Connects code changes to issues and external trackers.
 - **Collaboration**: Tags users and links resources intuitively.
 
 GitHub’s autolinking blends simplicity (built-in) with customization (external references), making it a powerful tool for developers. If you need more specific examples or help setting up a custom autolink, let me know!
+
+
+
+### GIT Listing of Updated and Modified
+
+To Find Modified files
+
+```bash
+git diff --name-only --shortstat
+```
+
+To find new files not commited
+
+```bash
+git ls-files --exclude-standard -o
+```
 
 
 
