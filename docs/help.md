@@ -164,6 +164,16 @@ GitHub’s autolinking blends simplicity (built-in) with customization (external
 
 ### GIT Listing of Updated and Modified
 
+Using [**standard release**](https://github.com/conventional-changelog/standard-version?tab=readme-ov-file#readme)  ( see how its installed )
+
+To run use either See above for more options
+
+```bash
+pnmp release # to pump version relase or
+# or
+pump prelease # to pump a pre relase version
+```
+
 To Find Modified files
 
 ```bash
@@ -176,7 +186,7 @@ To find new files not commited
 git ls-files --exclude-standard -o
 ```
 
-
+Consider reviewing [Conventional Commits](https://www.conventionalcommits.org/en/)
 
 ----
 
