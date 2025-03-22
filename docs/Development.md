@@ -43,6 +43,82 @@
   - **Why It’s Useful**: Adds basic README script to [Caja](./docs/help.md#using caja), saving time by avoiding external editors for simple tasks.
   - **Source**: [insert_readme.sh](../scripts/insert_readme.sh)
 
+---
+
+## Version 007
+
+### Background
+
+​	As we were developing together "create_readme" script for CAJA scripts as its not located on https://github.com/DavitTec/create_readme  I need to develop a INSERT script and more 
+
+- [x] As we were developing together "create_readme" script for CAJA scripts.   
+- [x] The code of "create_readme.sh" that GROK previously provided did not work and needs some more amendments.    But my simple original script; "insert_readme.sh" does work.   
+  1. I want an insert bash script ("Insert" ) [without extension ".sh") in the folder "./scripts/"  to push the  "insert_readme.sh" into the user CAJA scripts folder if is installed CAJA (assume >upbutu 20.0) and  
+  2. to check and compare the current script version in the destination, if exists;  
+  3. to it executable new script executable;  
+  4. remove the extension and Capitalise the script name as "INSERT README" so it is cleaner for the menu, upon activating the Caja Scripts option (left mouse)  
+  5. to add another to the "Package.json" action script, to run the "Insert" script, as to deploy.
+
+Let's restructure and fix the "create_readme.sh" script according to your requirements. I'll create a solution that integrates with the Insert script and adds template management.
+
+Here's the updated structure and scripts:
+
+1. First, the main `create_readme.sh` script:
+
+   See 
+
+   [create_readme.sh](../src/create_readme.sh)
+
+2. Create a basic template in `./src/Templates/basic.md`:
+
+​	See
+
+​	[basic.md](../src/Templates/basic.md)
+
+3. Modify the `Insert` script to handle both scripts:
+
+​	See [../scripts/Insert](../scripts/Insert)
+
+### Usage:
+
+- Run `npm run deploy:caja` to install both scripts to Caja
+- Right-click in Caja to see "CREATE README" and "INSERT README" in the scripts menu
+- The "CREATE README" script will:
+  - Create a README.md in the current directory
+  - Use the basic template by default
+  - Support `-t` flag for different templates
+  - Maintain help and version options
+
+The template system allows you to:
+- Add more templates to `./src/Templates/` as `.md` files
+- Use them with `-t templatename` (without .md extension)
+- Later extend the script to create new templates dynamically
+
+This maintains your versioning and help requirements while adding the template system and proper Caja integration through the Insert script. Let me know if you need any adjustments!
+
+To deploy and test
+
+```bash
+pnpm deploy:caja
+```
+
+### FIX
+
+Does not work as it is assuming running "CREATE README" and "INSERT README" from Terminal.
+
+using CAJA scripts the scripts need INPUT using zanity
+
+Zenity is a handy tool for creating graphical user interfaces (GUIs) in shell scripts on Linux and Unix-like systems.
+
+1) can we fix the current version to include Zenity and 
+2) **Modularity**: Organized into functions for better maintenance
+3) less mouse clicks to keep it simple, adopting a default
+4. understanding context of left mouse click selection on current folder name or file
+
+   
+
+   
+
 ## Version 006
 
 Let's create an "Insert" script that meets your requirements. Here's a bash script that accomplishes what you've described:
