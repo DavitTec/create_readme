@@ -38,7 +38,12 @@
         └── README_0.md
 ```
 
+## Scripts
 
+- [**insert_readme.sh**](../scripts/insert_readme.sh) (Version 0.3)
+  - **Purpose**: A simple copy of a [README.md](../src/Templates/README_0.md) template from [Templates](../src/Templates/) into your current folder using a caja scripts-like feature.
+  - **Why It’s Useful**: Adds basic README script to [Caja](./docs/help.md#using caja), saving time by avoiding external editors for simple tasks.
+  - **Source**: [insert_readme.sh](../scripts/insert_readme.sh)
 
 ## Version 006
 
