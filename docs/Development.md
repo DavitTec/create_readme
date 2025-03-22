@@ -4,6 +4,40 @@
 
 | [HOME](../README.md) | **DEVELOPMENT** | [HELP](./help.md) | [ISSUES](./issues.md) | [ToDo](./ToDo.md) |
 
+## Current Directory Structure
+
+```bash
+.
+├── CHANGELOG.md
+├── docs
+│   ├── assets
+│   │   └── repository-open-graph-template.png
+│   ├── Development.md
+│   ├── help.md
+│   ├── issues.md
+│   └── ToDo.md
+├── LICENSE
+├── node_modules
+│   └── varioius
+├── package.json
+├── pnpm-lock.yaml
+├── public
+│   ├── favicon_io
+│   │   ├── varioius
+│   ├── icons
+│   │   └── varioius
+│   └── img
+│       └── varioius
+├── README.md
+├── scripts
+│   ├── create_readme.sh
+│   ├── Insert
+│   └── insert_readme.sh
+└── src
+    └── Templates
+        └── README_0.md
+```
+
 
 
 ## Version 006
