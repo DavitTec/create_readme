@@ -1,5 +1,5 @@
 #!/bin/bash
-version=0.3
+version=0.5
 
 # Source template file
 SRC="/home/david/Templates/markdown/README_0.md"
