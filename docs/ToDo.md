@@ -1,6 +1,6 @@
 # ToDo
 
-| [HOME](../README.md) | [DEVELOPMENT](./Development.md) | [HELP](./help.md)  | [ISSUES](./issues.md) | >**ToDo** |
+| [HOME](../README.md) | [DEVELOPMENT](./Development.md) | [HELP](./help.md)  | [ISSUES](./issues.md) | **ToDo** |
 
 ---
 
