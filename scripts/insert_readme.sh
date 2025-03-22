@@ -1,8 +1,8 @@
 #!/bin/bash
-version=0.2
+version=0.3
 
 # Source template file
-SRC="../src/Templates/README.md"
+SRC="/home/david/Templates/markdown/README_0.md"
 # Current date in YYYYMMDD format
 DATE=$(date '+%Y%m%d')
 # Default output filename
@@ -14,15 +14,16 @@ if [ ! -f "$SRC" ]; then
     exit 1
 fi
 
-# If README.md exists, create a dated version instead
+# If file exists, create a dated version instead
 if [ -f "$FILE" ]; then
+    msg="Existing "$FILE" found, creating "
     FILE="${DATE}-README.md"
-    echo "Existing README.md found, creating $FILE instead"
+    echo "$msg $FILE instead"
 else
     echo "[v$version] Creating new README.md"
 fi
 
-# Copy the template and check if the operation was successful
+# Copy the template, rename and check if the operation was successful
 if cp -n "$SRC" "$FILE"; then
     echo "Successfully created $FILE"
 else

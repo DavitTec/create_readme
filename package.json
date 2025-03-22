@@ -1,12 +1,17 @@
 {
   "name": "create_readme",
   "version": "0.0.5",
-  "description": "Script and templates to help you Create README.md's.",
+  "description": "Script and templates to help you Create a README for a new or current project.",
+  "homepage": "https://github.com/DavitTec/create_readme#readme",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "release": "standard-version",
     "prelease": "standard-version -p "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavitTec/create_readme.git"
   },
   "keywords": [
     "readme",
@@ -14,10 +19,19 @@
     "coding",
     "node"
   ],
-  "author": "Davit Mullsin (x/@_davit github@DavitTec)",
-  "license": "MIT",
+  "author": "Davit Mullins (x/@_davit github@DavitTec)",
+  "email": "git_create_readem@davit.ie",
+  "license": "https://github.com/DavitTec/create_readme/blob/master/LICENSE",
+  "bugs": {
+    "url": "https://github.com/DavitTec/create_readme/issues"
+  },
   "packageManager": "pnpm@10.6.5",
   "devDependencies": {
     "standard-version": "^9.5.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      ""
+    ]
   }
 }
