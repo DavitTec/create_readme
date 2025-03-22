@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Target directory for CAJA scripts
+CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
+SOURCE_SCRIPT="./scripts/insert_readme.sh"
+TARGET_SCRIPT_NAME="INSERT README"
+VERSION="0.0.6" # You can modify this version number
+
+# Check if CAJA is installed (checking for caja binary)
+if ! command -v caja &>/dev/null; then
+  echo "Error: Caja file manager doesn't appear to be installed"
+  exit 1
+fi
+
+# Create CAJA scripts directory if it doesn't exist
+mkdir -p "$CAJA_SCRIPTS_DIR"
+
+# Check if source script exists
+if [ ! -f "$SOURCE_SCRIPT" ]; then
+  echo "Error: Source script $SOURCE_SCRIPT not found"
+  exit 1
+fi
+
+# Check if target script already exists and compare versions
+TARGET_PATH="$CAJA_SCRIPTS_DIR/$TARGET_SCRIPT_NAME"
+if [ -f "$TARGET_PATH" ]; then
+  # Extract version from existing script (assuming it has a VERSION variable)
+  EXISTING_VERSION=$(grep "VERSION=" "$TARGET_PATH" | cut -d'"' -f2)
+  if [ "$EXISTING_VERSION" = "$VERSION" ]; then
+    echo "Script $TARGET_SCRIPT_NAME version $VERSION already installed"
+    exit 0
+  else
+    echo "Updating $TARGET_SCRIPT_NAME from version $EXISTING_VERSION to $VERSION"
+  fi
+fi
+
+# Copy the script and rename it
+cp "$SOURCE_SCRIPT" "$TARGET_PATH"
+
+# Make the script executable
+chmod +x "$TARGET_PATH"
+
+echo "Successfully installed $TARGET_SCRIPT_NAME version $VERSION to CAJA scripts"
+
+# For your Package.json, you can add this to the "scripts" section:
+# "deploy:caja": "bash ./scripts/Insert"

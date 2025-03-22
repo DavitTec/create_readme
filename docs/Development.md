@@ -4,6 +4,65 @@
 
 | [HOME](../README.md) | **DEVELOPMENT** | [HELP](./help.md) | [ISSUES](./issues.md) | [ToDo](./ToDo.md) |
 
+
+
+## Version 006
+
+Let's create an "Insert" script that meets your requirements. Here's a bash script that accomplishes what you've described:
+
+creating a [Insert](../scripts/Insert) script
+
+```bash
+#!/bin/bash
+
+# Target directory for CAJA scripts
+CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
+SOURCE_SCRIPT="./scripts/insert_readme.sh"
+TARGET_SCRIPT_NAME="INSERT README"
+VERSION="1.0.0"  # You can modify this version number
+#....
+#.... # OPEN script for more 
+```
+
+To implement this, follow these steps:
+
+1. Save this script as `Insert` (without .sh extension) in your `./scripts/` folder
+
+2. Make it executable:
+```bash
+chmod +x ./scripts/Insert
+```
+
+3. Add this to your `package.json` under the "scripts" section:
+```json
+{
+  "scripts": {
+    "deploy:caja": "bash ./scripts/Insert"
+  }
+}
+```
+
+This script will:
+1. Check if Caja is installed
+2. Create the CAJA scripts directory if it doesn't exist
+3. Verify the source script exists
+4. Check if the script already exists in the target location and compare versions
+5. Copy the script with the capitalized name "INSERT README"
+6. Make it executable
+7. Provide feedback about the installation
+
+To use it:
+```bash
+npm run deploy:caja
+```
+
+The script assumes:
+- Your original `insert_readme.sh` exists in `./scripts/`
+- You're using Ubuntu 20.04 or later (Caja is typically available)
+- You have write permissions in your home directory
+
+If you need to modify the version checking logic or add more features, let me know! You might want to adjust the VERSION variable or add more sophisticated version comparison depending on your needs.
+
 ## Version 003
 
 Lets first "create README.md" script better to include a default basic Template and or an option to select different prescribed templates for specific cases, like 
