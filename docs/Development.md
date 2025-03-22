@@ -2,7 +2,7 @@
 
 > Create a Markdown README.md and the like for file and project management based from context template(s)
 
-| [HOME](../README.md) | >**DEVELOPMENT** | [HELP](./help.md) | [ISSUES](./issues.md) | [ToDo](./ToDo.md) |
+| [HOME](../README.md) | **DEVELOPMENT** | [HELP](./help.md) | [ISSUES](./issues.md) | [ToDo](./ToDo.md) |
 
 ## Version 003
 
