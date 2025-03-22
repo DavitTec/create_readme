@@ -1,18 +1,21 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-5"
-TEMPLATE_DIR="$HOME/Templates/markdown" # Removed trailing slash
+VERSION="0.0.6-4"
+TEMPLATE_DIR="$HOME/Templates/markdown/" # TODO Moving templates to user $HOME/Templates/markdown if exists else create
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
 DEBUG=false # Set to true for debugging
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get script's directory and set TESTDIR relative to it
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # Assume "$HOME/.config/caja/scripts "
+# TODO do we need SCRIPT_DIR varable?
+# TODO Test direct in DEBUG mode must point to $USER $TEMPLATE_DIR/test and testif exists
 TESTDIR="$TEMPLATE_DIR/test"
 
 # Debug function
 debug() {
   if [ "$DEBUG" = true ]; then
-    echo "DEBUG: $1 (Test dir: $TESTDIR)"
+    echo "DEBUG: $1 : Testing in $TESTDIR directory"
   fi
 }
 
@@ -34,9 +37,6 @@ setup_templates() {
   if [ ! -f "$TEMPLATE_DIR/$DEFAULT_TEMPLATE.md" ]; then
     echo "# Project Title\n\n## Description\n[Add description]\n\n## Installation\n[Add instructions]\n\n## Version\n$VERSION" >"$TEMPLATE_DIR/$DEFAULT_TEMPLATE.md"
   fi
-  if [ "$DEBUG" = true ]; then
-    mkdir -p "$TESTDIR"
-  fi
 }
 
 # Function to get available templates
@@ -51,11 +51,6 @@ create_readme() {
   local output_file="$target_dir/README.md"
 
   debug "Creating README at $output_file with template $template"
-
-  if [ ! -d "$target_dir" ]; then
-    zenity --error --title="Error" --text="Target directory $target_dir does not exist"
-    return 1
-  fi
 
   if [ -f "$output_file" ]; then
     if ! zenity --question --title="File Exists" --text="$output_file already exists. Overwrite?"; then
@@ -77,46 +72,29 @@ create_readme() {
   zenity --info --title="Success" --text="Created $output_file using $template template"
 }
 
-# Function to determine context
-get_context() {
-  local context
-
-  if [ "$DEBUG" = true ]; then
-    context="$TESTDIR"
-    debug "Debug mode: Using test directory $context"
-  else
-    if [ -n "$CAJA_SCRIPT_SELECTED_FILE_PATHS" ]; then
-      context="${CAJA_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}"
-      debug "Caja context: Selected path is $context"
-    else
-      context="$PWD"
-      debug "No Caja context: Falling back to current directory $context"
-    fi
-  fi
-
-  if [ -f "$context" ]; then
-    context="$(dirname "$context")"
-    debug "Selected a file, using parent directory: $context"
-  fi
-
-  if [ ! -d "$context" ]; then
-    zenity --error --title="Error" --text="Invalid context: $context is not a directory"
-    context=""
-  fi
-
-  echo "$context"
-}
-
 # Main function
 main() {
-  local context=$(get_context)
+  local context
 
-  if [ -z "$context" ]; then
-    zenity --error --title="Error" --text="Could not determine working directory"
-    exit 1
+  # Set context based on debug mode
+  if [ "$DEBUG" = true ]; then
+    context="$TESTDIR"
+    debug "Running in debug mode, using test directory: $TESTDIR"
+    # Ensure test directory exists
+    mkdir -p "$TESTDIR"
+  else
+    # Get context from Caja
+    context="${CAJA_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}"
+    # Fallback to current directory if no selection
+    [ -n "$context" ] || context="$PWD"
   fi
 
-  debug "Final working directory: $context"
+  # If it's a file, use its parent directory
+  if [ -f "$context" ]; then
+    context="$(dirname "$context")"
+  fi
+
+  debug "Working directory: $context"
 
   # Handle command line args
   while [[ $# -gt 0 ]]; do
@@ -144,12 +122,13 @@ main() {
     --text="Choose a template for $context" \
     --column="Template" \
     --default-item="$DEFAULT_TEMPLATE" \
-    --width=300 --height=200 2>/dev/null)
+    --width=300 --height=200)
 
-  if [ -z "$template" ]; then
+  # Cancel if no template selected
+  [ -n "$template" ] || {
     debug "No template selected, exiting"
     exit 0
-  fi
+  }
 
   # Create the README
   create_readme "$context" "$template"
