@@ -6,7 +6,7 @@
 
 - [ ] Adding Scritps folder with
   - [ ] [Insert_Readme](./scripts/insert_readme.sh)
-- [x] Create [Todo.md](ToDo.md)
+- [x] Create [Todo.md](./ToDo.md)
 
 - [X] Add social media preview image
 
