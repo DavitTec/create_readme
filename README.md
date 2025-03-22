@@ -30,18 +30,18 @@ chmod +x ./insert_readme.sh
 
 ## Development Notes
 
-Refer to [Development Documentation](./docs/Development.md) for lasted notes and helpful hints to assist with the advancement of this tool.
+For the last notes and helpful hints on how to advance this tool, refer to [Development Documentation](./docs/Development.md).
 
 ### Scripts
 
 - [**insert_readme.sh**](./scripts/insert_readme.sh) (Version 0.3)
   - **Purpose**: A simple copy of a [README.md](./src/Templates/README_0.md) template from [Templates](./src/Templates/) into your current folder using a caja scripts-like feature.
   - **Why It’s Useful**: Adds basic README script to [Caja](./docs/help.md#using caja), saving time by avoiding external editors for simple tasks.
-  - **Source**: [insert_readme.sh](./srcipts/insert_readme.sh)
+  - **Source**: [insert_readme.sh](./scripts/insert_readme.sh)
 
 ## ISSUES
 
-See [Current Issues or problems](./docs/issues.md) that can be referred to here. Other issues reported in coding on GIT ISSUEs will be located when the arise. 
+See [Current Issues or problems](./docs/issues.md), which can be referred to here. Other issues reported in coding on GIT ISSUEs will be located when they arise. 
 
 - [Where can I report a bug?](./docs/issues.md#reporting)
 
