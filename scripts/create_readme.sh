@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-9"
+VERSION="0.0.6-12"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
@@ -28,6 +28,15 @@ if ! command -v zenity &>/dev/null; then
   echo "Error: Zenity is required but not installed" >&2
   exit 1
 fi
+
+# Test Zenity functionality
+test_zenity() {
+  echo "basic" | zenity --list --title="Test Zenity" --column="Options" --text="This is a Zenity test" 2>/dev/null
+  if [ $? -ne 0 ]; then
+    echo "Error: Zenity test failed. Please check Zenity installation." >&2
+    exit 1
+  fi
+}
 
 # Function to show help
 show_help() {
@@ -66,7 +75,12 @@ EOF
 
 # Function to get available templates
 get_templates() {
-  ls "$TEMPLATE_DIR"/*.md 2>/dev/null | xargs -n 1 basename | sed 's/\.md$//' || echo "$DEFAULT_TEMPLATE"
+  local templates=$(ls "$TEMPLATE_DIR"/*.md 2>/dev/null | xargs -n 1 basename | sed 's/\.md$//')
+  if [ -z "$templates" ]; then
+    echo "$DEFAULT_TEMPLATE"
+  else
+    echo "$templates"
+  fi
 }
 
 # Function to create README
@@ -108,7 +122,7 @@ create_readme() {
 get_context() {
   local context
 
-  # Ensure directories are set up before determining context
+  # Ensure directories are set up
   setup_templates
 
   if [ "$DEBUG" = true ]; then
@@ -161,6 +175,9 @@ main() {
     esac
   done
 
+  # Test Zenity before proceeding
+  test_zenity
+
   local context=$(get_context)
 
   if [ -z "$context" ]; then
@@ -171,22 +188,45 @@ main() {
   diag "Working directory set to: $context"
 
   # Get template choice
+  debug "Fetching templates"
+  local templates=$(get_templates)
+  if [ -z "$templates" ]; then
+    zenity --error --title="Error" --text="No templates found in $TEMPLATE_DIR"
+    exit 1
+  fi
+
+  debug "Templates available: $templates"
+  debug "Launching Zenity dialog"
+
+  # Use explicit Zenity call with error checking
   local template
-  template=$(get_templates | zenity --list \
+  template=$(echo "$templates" | zenity --list \
     --title="Select Template" \
     --text="Choose a template for $context" \
     --column="Template" \
     --default-item="$DEFAULT_TEMPLATE" \
     --width=300 --height=200 2>/dev/null)
 
-  if [ "$DEBUG" = true ] && [ -z "$template" ]; then
-    template="$DEFAULT_TEMPLATE"
-    debug "Template selected: $template (defaulted to basic if none chosen)"
+  if [ $? -ne 0 ]; then
+    debug "Zenity dialog failed or was cancelled"
+    if [ "$DEBUG" = true ]; then
+      template="$DEFAULT_TEMPLATE"
+      debug "Falling back to default template: $template"
+    else
+      debug "No template selected, exiting"
+      exit 0
+    fi
   elif [ -z "$template" ]; then
-    debug "No template selected"
-    exit 0
+    if [ "$DEBUG" = true ]; then
+      template="$DEFAULT_TEMPLATE"
+      debug "Template selected: $template (defaulted to basic if none chosen)"
+    else
+      debug "No template selected"
+      exit 0
+    fi
   fi
 
+  debug "Selected template: $template"
   # Create the README
   create_readme "$context" "$template"
 }
