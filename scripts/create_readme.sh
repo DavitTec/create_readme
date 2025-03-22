@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-7"
+VERSION="0.0.6-9"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
@@ -9,21 +9,23 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TESTDIR="$TEMPLATE_DIR/test"
 DEBUG=false
 
-# Debug function
+# Debug function (output to stderr)
 debug() {
   if [ "$DEBUG" = true ]; then
-    echo "DEBUG: $1 (Test dir: $TESTDIR)"
+    echo "DEBUG: $1 (Test dir: $TESTDIR)" >&2
   fi
 }
 
 # Diagnostic function
 diag() {
-  echo "DIAG: $1"
+  if [ "$DEBUG" = true ]; then
+    echo "DIAG: $1" >&2
+  fi
 }
 
 # Ensure Zenity is installed
 if ! command -v zenity &>/dev/null; then
-  diag "Zenity is required but not installed"
+  echo "Error: Zenity is required but not installed" >&2
   exit 1
 fi
 
@@ -33,14 +35,32 @@ show_help() {
     --text="Create Readme - Version $VERSION\n\nUsage:\n  $0 [options]\n\nOptions:\n  -h, --help     Show this help\n  -v, --version  Show version\n  -d             Enable debug mode (uses $TESTDIR)"
 }
 
-# Function to ensure template directory exists
+# Function to ensure template and test directories exist
 setup_templates() {
-  mkdir -p "$TEMPLATE_DIR"
+  mkdir -p "$TEMPLATE_DIR" || {
+    zenity --error --title="Error" --text="Failed to create template directory $TEMPLATE_DIR"
+    exit 1
+  }
   if [ ! -f "$TEMPLATE_DIR/$DEFAULT_TEMPLATE.md" ]; then
-    echo "# Project Title\n\n## Description\n[Add description]\n\n## Installation\n[Add instructions]\n\n## Version\n$VERSION" >"$TEMPLATE_DIR/$DEFAULT_TEMPLATE.md"
+    cat <<EOF >"$TEMPLATE_DIR/$DEFAULT_TEMPLATE.md"
+# Project Title
+
+## Description
+[Add description]
+
+## Installation
+[Add instructions]
+
+## Version
+$VERSION
+EOF
   fi
   if [ "$DEBUG" = true ]; then
-    mkdir -p "$TESTDIR"
+    mkdir -p "$TESTDIR" || {
+      zenity --error --title="Error" --text="Failed to create test directory $TESTDIR"
+      exit 1
+    }
+    debug "Ensured test directory $TESTDIR exists"
   fi
 }
 
@@ -59,8 +79,8 @@ create_readme() {
   diag "Attempting to create $output_file"
 
   if [ ! -d "$target_dir" ]; then
-    zenity --error --title="Error" --text="Target directory $target_dir does not exist"
     diag "Target directory $target_dir does not exist"
+    zenity --error --title="Error" --text="Target directory $target_dir does not exist"
     return 1
   fi
 
@@ -73,55 +93,54 @@ create_readme() {
 
   if [ ! -f "$TEMPLATE_DIR/$template.md" ]; then
     zenity --error --title="Error" --text="Template $template not found in $TEMPLATE_DIR"
-    diag "Template $template not found"
     return 1
   fi
 
   cp "$TEMPLATE_DIR/$template.md" "$output_file" || {
     zenity --error --title="Error" --text="Failed to create $output_file"
-    diag "Copy failed"
     return 1
   }
   chmod 644 "$output_file"
   zenity --info --title="Success" --text="Created $output_file using $template template"
-  diag "Successfully created $output_file"
 }
 
 # Function to determine context
 get_context() {
   local context
 
-  diag "Determining context..."
+  # Ensure directories are set up before determining context
+  setup_templates
+
   if [ "$DEBUG" = true ]; then
     context="$TESTDIR"
     debug "Debug mode: Using test directory $context"
   else
     if [ -n "$CAJA_SCRIPT_SELECTED_FILE_PATHS" ]; then
       context="${CAJA_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}"
-      diag "Caja context detected: $context"
+      debug "Caja context: Selected path is $context"
     else
       context="$PWD"
-      diag "No Caja context, using current directory: $context"
+      debug "No Caja context: Falling back to current directory $context"
     fi
   fi
 
   if [ -f "$context" ]; then
     context="$(dirname "$context")"
-    diag "Selected a file, using parent directory: $context"
+    debug "Selected a file, using parent directory $context"
   fi
 
   if [ ! -d "$context" ]; then
-    zenity --error --title="Error" --text="Invalid context: $context is not a directory"
-    diag "Invalid context: $context"
+    debug "Invalid context: $context is not a directory"
     context=""
   fi
 
+  diag "Determined context: $context"
   echo "$context"
 }
 
 # Main function
 main() {
-  # Handle command line args
+  # Handle command line args first
   while [[ $# -gt 0 ]]; do
     case $1 in
     -h | --help)
@@ -146,39 +165,25 @@ main() {
 
   if [ -z "$context" ]; then
     zenity --error --title="Error" --text="Could not determine working directory"
-    diag "Context determination failed"
     exit 1
   fi
 
-  debug "Final working directory: $context"
   diag "Working directory set to: $context"
-
-  # Setup templates
-  setup_templates
 
   # Get template choice
   local template
-  if [ "$DEBUG" = true ]; then
-    template=$(get_templates | zenity --list \
-      --title="Select Template" \
-      --text="Choose a template for $context" \
-      --column="Template" \
-      --default-item="$DEFAULT_TEMPLATE" \
-      --width=300 --height=200 2>/dev/null)
-    template=${template:-$DEFAULT_TEMPLATE}
-    debug "Template selected: $template (defaulted to $DEFAULT_TEMPLATE if none chosen)"
-  else
-    template=$(get_templates | zenity --list \
-      --title="Select Template" \
-      --text="Choose a template for $context" \
-      --column="Template" \
-      --default-item="$DEFAULT_TEMPLATE" \
-      --width=300 --height=200 2>/dev/null)
-  fi
+  template=$(get_templates | zenity --list \
+    --title="Select Template" \
+    --text="Choose a template for $context" \
+    --column="Template" \
+    --default-item="$DEFAULT_TEMPLATE" \
+    --width=300 --height=200 2>/dev/null)
 
-  if [ -z "$template" ]; then
-    debug "No template selected, exiting"
-    diag "No template selected"
+  if [ "$DEBUG" = true ] && [ -z "$template" ]; then
+    template="$DEFAULT_TEMPLATE"
+    debug "Template selected: $template (defaulted to basic if none chosen)"
+  elif [ -z "$template" ]; then
+    debug "No template selected"
     exit 0
   fi
 
