@@ -1,6 +1,6 @@
 {
   "name": "create_readme",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Script and templates to help you Create README.md's.",
   "main": "index.js",
   "scripts": {
