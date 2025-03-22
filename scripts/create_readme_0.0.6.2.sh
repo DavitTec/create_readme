@@ -1,21 +1,20 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-3"
-TEMPLATE_DIR="$HOME/Templates/markdown/" Moving templates to user config
+VERSION="0.0.6-2"
+TEMPLATE_DIR="$HOME/.config/create_readme/templates" # Moving templates to user config
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
-DEBUG=false # Set to true for debugging
-# Get script's directory and set TESTDIR relative to it
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TESTDIR="$SCRIPT_DIR/../test/"
+DEBUG=true
+TESTDIR="../test/" # TODO need to make sure this points relative to the script base folder
 
-# Debug function
-debug() {
-  if [ "$DEBUG" = true ]; then
-    echo "DEBUG: $1 : Testing in $TESTDIR directory"
-  fi
-}
+# Debug
+# TODO Need to redefine the DBUGGING and testing features here
+# if debub is set to true then defaults set to test directory
+if $DEBUG; then
+  echo "DEBUG: Testing in './test/' directory"
+  target_dir=$TESTDIR
+fi
 
 # Ensure Zenity is installed
 if ! command -v zenity &>/dev/null; then
@@ -44,47 +43,33 @@ get_templates() {
 
 # Function to create README
 create_readme() {
-  local target_dir="$1"
-  local template="$2"
+  local target_dir="$1" ||
+    local template="$2"
   local output_file="$target_dir/README.md"
-
-  debug "Creating README at $output_file with template $template"
 
   if [ -f "$output_file" ]; then
     if ! zenity --question --title="File Exists" --text="$output_file already exists. Overwrite?"; then
-      debug "User chose not to overwrite"
       return 1
     fi
   fi
 
-  if [ ! -f "$TEMPLATE_DIR/$template.md" ]; then
-    zenity --error --title="Error" --text="Template $template not found in $TEMPLATE_DIR"
-    return 1
-  fi
-
-  cp "$TEMPLATE_DIR/$template.md" "$output_file" || {
-    zenity --error --title="Error" --text="Failed to create $output_file"
-    return 1
-  }
+  cp "$TEMPLATE_DIR/$template.md" "$output_file"
   chmod 644 "$output_file"
   zenity --info --title="Success" --text="Created $output_file using $template template"
 }
 
 # Main function
 main() {
-  local context
+  # Get context from Caja (selected file/folder)
+  # TODO trying to catch if in TESTING mode and to simulate mouse actions
+  [ ! $DEBUG ] || local context="$TESTDIR"
 
-  # Set context based on debug mode
-  if [ "$DEBUG" = true ]; then
-    context="$TESTDIR"
-    debug "Running in debug mode, using test directory: $TESTDIR"
-    # Ensure test directory exists
-    mkdir -p "$TESTDIR"
-  else
-    # Get context from Caja
-    context="${CAJA_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}"
-    # Fallback to current directory if no selection
-    [ -n "$context" ] || context="$PWD"
+  context="${CAJA_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}"
+
+  # If no selection, use current directory
+  if [ -z "$context" ]; then
+    context="$PWD"
+    [ ! $DEBUG ] || context="$TESTDIR"
   fi
 
   # If it's a file, use its parent directory
@@ -92,9 +77,7 @@ main() {
     context="$(dirname "$context")"
   fi
 
-  debug "Working directory: $context"
-
-  # Handle command line args
+  # Handle command line args for terminal use
   while [[ $# -gt 0 ]]; do
     case $1 in
     -h | --help)
@@ -111,10 +94,10 @@ main() {
     esac
   done
 
-  # Setup templates
+  # Setup templates if needed
   setup_templates
 
-  # Get template choice
+  # Get template choice with Zenity
   local template=$(get_templates | zenity --list \
     --title="Select Template" \
     --text="Choose a template for $context" \
@@ -123,10 +106,9 @@ main() {
     --width=300 --height=200)
 
   # Cancel if no template selected
-  [ -n "$template" ] || {
-    debug "No template selected, exiting"
+  if [ -z "$template" ]; then
     exit 0
-  }
+  fi
 
   # Create the README
   create_readme "$context" "$template"
