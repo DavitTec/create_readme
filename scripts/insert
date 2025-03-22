@@ -6,10 +6,7 @@ CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
 
 # Scripts to install
-SCRIPTS=(
-  "insert_readme:INSERT README"
-  "create_readme:CREATE README"
-)
+SCRIPTS=("insert_readme:INSERT README"  "create_readme:CREATE README" "test_zenity:TEST ZENITY")
 
 # Check if CAJA is installed (checking for caja binary)
 if ! command -v caja &>/dev/null; then
