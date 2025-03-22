@@ -21,7 +21,7 @@ TEMPLATES[6]="$TEMPLATE_DIR/recipe.md"
 TEMPLATES[7]="$TEMPLATE_DIR/grant-proposal.md"
 
 # Default template content if none exists
-DEFAULT_TEMPLATE="# Project README\n\nCreated: $DATE\n\n## Overview\n\n## Next Steps\n\n## References\n"
+# DEFAULT_TEMPLATE="# Project README\n\nCreated: $DATE\n\n## Overview\n\n## Next Steps\n\n## References\n"
 
 # Function to show usage
 show_usage() {

@@ -16,7 +16,7 @@ fi
 
 # If file exists, create a dated version instead
 if [ -f "$FILE" ]; then
-  msg="Existing "$FILE" found, creating "
+  msg="Existing $FILE found, creating "
   FILE="${DATE}-README.md"
   echo "$msg $FILE instead"
 else

@@ -10,8 +10,6 @@
 .
 ├── CHANGELOG.md
 ├── docs
-│   ├── assets
-│   │   └── repository-open-graph-template.png
 │   ├── Development.md
 │   ├── help.md
 │   ├── issues.md
@@ -60,28 +58,31 @@ SOURCE_SCRIPT="./scripts/insert_readme.sh"
 TARGET_SCRIPT_NAME="INSERT README"
 VERSION="1.0.0"  # You can modify this version number
 #....
-#.... # OPEN script for more 
+#.... # OPEN script for more
 ```
 
 To implement this, follow these steps:
 
 1. Save this script as `Insert` (without .sh extension) in your `./scripts/` folder
 
-2. Make it executable:
-```bash
-chmod +x ./scripts/Insert
-```
+1. Make it executable:
 
-3. Add this to your `package.json` under the "scripts" section:
-```json
-{
-  "scripts": {
-    "deploy:caja": "bash ./scripts/Insert"
-  }
-}
-```
+    ```bash
+    chmod +x ./scripts/Insert
+    ```
+
+1. Add this to your `package.json` under the "scripts" section:
+
+    ```json
+    {
+    "scripts": {
+        "deploy:caja": "bash ./scripts/Insert"
+    }
+    }
+    ```
 
 This script will:
+
 1. Check if Caja is installed
 2. Create the CAJA scripts directory if it doesn't exist
 3. Verify the source script exists
@@ -91,11 +92,13 @@ This script will:
 7. Provide feedback about the installation
 
 To use it:
+
 ```bash
 npm run deploy:caja
 ```
 
 The script assumes:
+
 - Your original `insert_readme.sh` exists in `./scripts/`
 - You're using Ubuntu 20.04 or later (Caja is typically available)
 - You have write permissions in your home directory
@@ -104,25 +107,25 @@ If you need to modify the version checking logic or add more features, let me kn
 
 ## Version 003
 
-Lets first "create README.md" script better to include a default basic Template and or an option to select different prescribed templates for specific cases, like 
+Lets first "create README.md" script better to include a default basic Template and or an option to select different prescribed templates for specific cases, like
 
-**Options**
+### Options
 
-1. default template for most project folders fr developing app projects geared for best practice. 
-2. template to head a folder that is related to a business development project 
-3. a template to head a folder about a person, client, or company 
-4. a template for formulating a project plan 
-5. a template for starting a screenplay, book, or article 
-6. a template for starting an idea 6 - a template for food recipes. (before submitting to my own recipe website 
-7. a template for getting a grant on a topic
+  1. default template for most project folders fr developing app projects geared for best practice.
+  1. template to head a folder that is related to a business development project
+  1. a template to head a folder about a person, client, or company
+  1. a template for formulating a project plan
+  1. a template for starting a screenplay, book, or article
+  1. a template for starting an idea 6 - a template for food recipes. (before submitting to my own recipe website
+  1. a template for getting a grant on a topic
 
-A README is not usually the first file in a digital collections folder but should be the GUIDE and first to read as to the instructions for managing the Project or Topic folder and its contents.   As I like simple MARKDOWN and TEXT, a system that can quickly cater for handling Refs, footnotes, indexing, and referencing, and simple tables help organise fluid digital content.  All without the headache of formatting or filtering crazy embed content from social media, the web or PDF , documents or giving sources chat rooms like WHATSAPP (which I hate but use far too much) 
+A README is not usually the first file in a digital collections folder but should be the GUIDE and first to read as to the instructions for managing the Project or Topic folder and its contents. As I like simple MARKDOWN and TEXT, a system that can quickly cater for handling Refs, footnotes, indexing, and referencing, and simple tables help organise fluid digital content. All without the headache of formatting or filtering crazy embed content from social media, the web or PDF , documents or giving sources chat rooms like WHATSAPP (which I hate but use far too much)
 
-Having a quick README.md script to create the required HOW-TO and GUIDE helps according to a particular context and its project 
+Having a quick README.md script to create the required HOW-TO and GUIDE helps according to a particular context and its project
 
-A 100s ideas person usually working on many simultaneous items (ideas) at the same time. This is why one needs a quick offload of thoughts before returning back to each idea with snapshot of the same thought.  Use README more often.  
+A 100s ideas person usually working on many simultaneous items (ideas) at the same time. This is why one needs a quick offload of thoughts before returning back to each idea with snapshot of the same thought. Use README more often.
 
-Pioneers had RFC (requests for comments) and had a serialise pathway to progress ideas evolution when others are a given the opportunity to contribute 
+Pioneers had RFC (requests for comments) and had a serialise pathway to progress ideas evolution when others are a given the opportunity to contribute
 
 A quick way to generate README.md files with different templates based on project types, while keeping things simple and markdown-based. As someone juggling hundreds of ideas, you need a system that's fast, organised, and helps you capture thoughts efficiently. Let's build an enhanced version of your script that meets these requirements.
 
@@ -236,11 +239,9 @@ fi
 exit 0
 ```
 
-
-
 ## Version 002
 
-If want to improve your Caja scripts,  Here is the basic but an improved version with better functionality, error handling, and comments;
+If want to improve your Caja scripts, Here is the basic but an improved version with better functionality, error handling, and comments;
 
 ```bash
 #!/bin/bash
@@ -312,6 +313,3 @@ fi
 ```
 
 ---
-
-
-
