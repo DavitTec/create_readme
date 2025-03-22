@@ -3,7 +3,7 @@
 ## 0002
 
 - error wrong @ handle should be @[DavitTec](https://github.com/DavitTec/DavitTec)
-- new message 
+- new message
 
 ## 0001
 
