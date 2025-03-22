@@ -234,6 +234,22 @@ Useful Caja Scripts for Better Functionality, here is an example.
 
    - **Why It’s Useful**: Simplifies hiding files without altering their names, keeping your workspace clean and organized directly from the GUI.
 
+### Usage scripts  in Caja:
+
+- Left-click a folder or file
+- Right-click to open context menu
+- Go to Scripts > "CREATE README"
+- Select template from Zenity dialog (defaults to "basic")
+- Confirm overwrite if README exists
+- Get success message
+
+### Notes:
+
+- The script works both in Caja and from terminal (with `-h` and `-v` options)
+- Templates are stored in user config to persist across installations
+- Version matches your prerelease `0.0.6-1`
+- Check the repo URL is correct ([https://github.com/DavitTec/create_readme](https://github.com/DavitTec/create_readme))
+
 ---
 
 ## References

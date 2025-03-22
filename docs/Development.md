@@ -104,20 +104,62 @@ pnpm deploy:caja
 
 ### FIX
 
-Does not work as it is assuming running "CREATE README" and "INSERT README" from Terminal.
+take note: we are at prerelease 
+DavitTec https://github.com/DavitTec/create_readme
+chore(release): 0.0.6-1
 
-using CAJA scripts the scripts need INPUT using zanity
+[./scripts/create_readme.sh](./scripts/create_readme.sh) does not work and assumes running via CAJA scripts "CREATE README" and "INSERT README" from Terminal.Does not work as it is assuming running "CREATE README" and "INSERT README" from Terminal.
 
-Zenity is a handy tool for creating graphical user interfaces (GUIs) in shell scripts on Linux and Unix-like systems.
+- Zenity is a handy tool for creating graphical user interfaces (GUIs) in shell scripts on Linux and Unix-like systems.
 
 1) can we fix the current version to include Zenity and 
 2) **Modularity**: Organized into functions for better maintenance
 3) less mouse clicks to keep it simple, adopting a default
-4. understanding context of left mouse click selection on current folder name or file
+4) understanding context of left mouse click selection on current folder name or file
 
-   
+### Updates and Fixes:
 
-   
+1. **Zenity Integration**:
+   - Uses Zenity for GUI dialogs (template selection, overwrite confirmation, success messages)
+   - Reduces mouse clicks by providing a default template and simple selection
+
+2. **Modularity**:
+   - Organized into functions: `show_help`, `setup_templates`, `get_templates`, `create_readme`, `main`
+   - Easier to maintain and extend
+
+3. **Simplicity**:
+   - Automatically uses the selected folder/file context from Caja
+   - Defaults to "basic" template
+   - Single dialog for template selection
+
+4. **Context Awareness**:
+   - Uses `CAJA_SCRIPT_SELECTED_FILE_PATHS` to get the selected item
+   - Falls back to current directory if no selection
+   - Uses parent directory if a file is selected
+
+### Setup Instructions:
+
+1. Update the script in `./scripts/create_readme.sh`
+
+2. Ensure the `Insert` script from previous responses is updated with the new version:
+
+   ```bash
+   # In Insert script, update VERSION
+   VERSION="0.0.6-1"
+   ```
+
+3. Deploy:
+
+   ```bash
+   npm run deploy:caja
+   ```
+
+4. Template Management:
+
+   - Templates are now stored in `$HOME/.config/create_readme/templates/`
+   - A basic template is created automatically if none exist
+
+
 
 ## Version 006
 
