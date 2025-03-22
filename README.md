@@ -1,6 +1,6 @@
 # Create Readme
 
-🔥 Script and templates to help you Create a README for a new or current project.
+🔥 Script and templates to help you create a README for a new or current project.
 
 Version 0.0.5
 
@@ -30,26 +30,12 @@ chmod +x ./insert_readme.sh
 
 ## Development Notes
 
-Refer to [Development Documentation](./docs/Development.md) for lasted notes and helpful hints to assist with advancement of this tool.
+Refer to [Development Documentation](./docs/Development.md) for lasted notes and helpful hints to assist with the advancement of this tool.
 
 ### Scripts
 
-<<<<<<< HEAD
-- [**insert_readme.sh**](./scripts/insert_readme.sh) (Verson 0.3)
-  - **Purpose**: A simple copy of a [README.md](./src/Templates/README_0.md) template from [Templates](./src/Templates/) into your current folder using a caja scripts like feature.
-=======
-- [**insert_readme.sh**](./scripts/insert_readme.sh)
-
-  - **Purpose**:
-  - **Source**:
-
-  - **Script Example**:
-
-- [Insert_Readme_v.02](./src/Templates/README_template.md)
-
-  - **Purpose**: Basic create README.md file in the current selected folder
-
->>>>>>> 6494a54dd09f0735145c855940ed1da46bff7457
+- [**insert_readme.sh**](./scripts/insert_readme.sh) (Version 0.3)
+  - **Purpose**: A simple copy of a [README.md](./src/Templates/README_0.md) template from [Templates](./src/Templates/) into your current folder using a caja scripts-like feature.
   - **Why It’s Useful**: Adds basic README script to [Caja](./docs/help.md#using caja), saving time by avoiding external editors for simple tasks.
   - **Source**: [insert_readme.sh](./srcipts/insert_readme.sh)
 
