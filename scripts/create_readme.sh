@@ -1,14 +1,16 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-3"
-TEMPLATE_DIR="$HOME/Templates/markdown/" Moving templates to user config
+VERSION="0.0.6-4"
+TEMPLATE_DIR="$HOME/Templates/markdown/" # TODO Moving templates to user $HOME/Templates/markdown if exists else create
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
 DEBUG=false # Set to true for debugging
 # Get script's directory and set TESTDIR relative to it
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TESTDIR="$SCRIPT_DIR/../test/"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" # Assume "$HOME/.config/caja/scripts "
+# TODO do we need SCRIPT_DIR varable?
+# TODO Test direct in DEBUG mode must point to $USER $TEMPLATE_DIR/test and testif exists
+TESTDIR="$TEMPLATE_DIR/test"
 
 # Debug function
 debug() {
