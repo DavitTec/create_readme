@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-13"
+VERSION="0.0.6-14"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
@@ -29,9 +29,9 @@ if ! command -v zenity &>/dev/null; then
   exit 1
 fi
 
-# Test Zenity functionality
+# Test Zenity functionality (simple list)
 test_zenity() {
-  echo "basic" | zenity --list --title="Test Zenity" --column="Options" --text="This is a Zenity test" 2>/dev/null
+  zenity --list --title="Test Zenity" --column="Options" --text="This is a Zenity test" "basic" "test" 2>/dev/null
   if [ $? -ne 0 ]; then
     echo "Error: Zenity test failed. Please check Zenity installation." >&2
     exit 1
@@ -118,6 +118,7 @@ create_readme() {
 
   # Post-creation check
   if [ -f "$output_file" ]; then
+    debug "README created successfully at $output_file"
     zenity --info --title="Success" --text="Created $output_file using $template template"
   else
     zenity --error --title="Error" --text="Failed to verify $output_file after creation"
@@ -205,31 +206,27 @@ main() {
   debug "Templates available: $templates"
   debug "Launching Zenity dialog"
 
-  # Simplify Zenity call and add explicit error checking
+  # Pass templates as arguments to Zenity
   local template
-  if [ "$DEBUG" = true ]; then
-    # In debug mode, use default template if Zenity fails
-    template=$(zenity --list \
-      --title="Select Template" \
-      --text="Choose a template for $context" \
-      --column="Template" \
-      --default-item="$DEFAULT_TEMPLATE" \
-      --width=300 --height=200 <<<"$templates" 2>/dev/null || echo "$DEFAULT_TEMPLATE")
-  else
-    template=$(zenity --list \
-      --title="Select Template" \
-      --text="Choose a template for $context" \
-      --column="Template" \
-      --default-item="$DEFAULT_TEMPLATE" \
-      --width=300 --height=200 <<<"$templates" 2>/dev/null)
-    if [ $? -ne 0 ]; then
-      debug "Zenity dialog failed or was cancelled"
+  template=$(zenity --list \
+    --title="Select Template" \
+    --text="Choose a template for $context" \
+    --column="Template" \
+    --default-item="$DEFAULT_TEMPLATE" \
+    --width=300 --height=200 \
+    --timeout=30 \
+    $templates 2>/dev/null)
+
+  if [ $? -ne 0 ]; then
+    debug "Zenity dialog failed, timed out, or was cancelled"
+    if [ "$DEBUG" = true ]; then
+      template="$DEFAULT_TEMPLATE"
+      debug "Falling back to default template: $template"
+    else
       exit 1
     fi
-  fi
-
-  if [ -z "$template" ]; then
-    debug "No template selected or Zenity failed"
+  elif [ -z "$template" ]; then
+    debug "No template selected"
     if [ "$DEBUG" = true ]; then
       template="$DEFAULT_TEMPLATE"
       debug "Falling back to default template: $template"
