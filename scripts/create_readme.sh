@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-12"
+VERSION="0.0.6-13"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
@@ -115,7 +115,14 @@ create_readme() {
     return 1
   }
   chmod 644 "$output_file"
-  zenity --info --title="Success" --text="Created $output_file using $template template"
+
+  # Post-creation check
+  if [ -f "$output_file" ]; then
+    zenity --info --title="Success" --text="Created $output_file using $template template"
+  else
+    zenity --error --title="Error" --text="Failed to verify $output_file after creation"
+    return 1
+  fi
 }
 
 # Function to determine context
@@ -175,7 +182,7 @@ main() {
     esac
   done
 
-  # Test Zenity before proceeding
+  # Test Zenity
   test_zenity
 
   local context=$(get_context)
@@ -198,30 +205,35 @@ main() {
   debug "Templates available: $templates"
   debug "Launching Zenity dialog"
 
-  # Use explicit Zenity call with error checking
+  # Simplify Zenity call and add explicit error checking
   local template
-  template=$(echo "$templates" | zenity --list \
-    --title="Select Template" \
-    --text="Choose a template for $context" \
-    --column="Template" \
-    --default-item="$DEFAULT_TEMPLATE" \
-    --width=300 --height=200 2>/dev/null)
+  if [ "$DEBUG" = true ]; then
+    # In debug mode, use default template if Zenity fails
+    template=$(zenity --list \
+      --title="Select Template" \
+      --text="Choose a template for $context" \
+      --column="Template" \
+      --default-item="$DEFAULT_TEMPLATE" \
+      --width=300 --height=200 <<<"$templates" 2>/dev/null || echo "$DEFAULT_TEMPLATE")
+  else
+    template=$(zenity --list \
+      --title="Select Template" \
+      --text="Choose a template for $context" \
+      --column="Template" \
+      --default-item="$DEFAULT_TEMPLATE" \
+      --width=300 --height=200 <<<"$templates" 2>/dev/null)
+    if [ $? -ne 0 ]; then
+      debug "Zenity dialog failed or was cancelled"
+      exit 1
+    fi
+  fi
 
-  if [ $? -ne 0 ]; then
-    debug "Zenity dialog failed or was cancelled"
+  if [ -z "$template" ]; then
+    debug "No template selected or Zenity failed"
     if [ "$DEBUG" = true ]; then
       template="$DEFAULT_TEMPLATE"
       debug "Falling back to default template: $template"
     else
-      debug "No template selected, exiting"
-      exit 0
-    fi
-  elif [ -z "$template" ]; then
-    if [ "$DEBUG" = true ]; then
-      template="$DEFAULT_TEMPLATE"
-      debug "Template selected: $template (defaulted to basic if none chosen)"
-    else
-      debug "No template selected"
       exit 0
     fi
   fi
