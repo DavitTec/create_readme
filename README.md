@@ -4,7 +4,7 @@
 
 Version 0.0.3
 
-| >**HOME** | [DEVELOPMENT](./docs/Development.md)  | [HELP](./docs/help.md) | [ISSUES](./docs/issues.md) | [ToDo](./docs/ToDo.md) |
+| **HOME** | [DEVELOPMENT](./docs/Development.md)  | [HELP](./docs/help.md) | [ISSUES](./docs/issues.md) | [ToDo](./docs/ToDo.md) |
 
 ## Purpose
 
