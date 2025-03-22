@@ -35,7 +35,7 @@ chmod +x ./insert_readme.sh
 
   - **Script Example**:
 
-- [Insert_Readme_v.02](./src/Templates/README (template).md);
+- [Insert_Readme_v.02](./src/Templates/README_template.md)
 
   - **Purpose**: Basic create README.md file in the current selected folder
 
