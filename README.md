@@ -2,7 +2,7 @@
 
 🔥 Script and templates to help you Create a README for a new or current project.
 
-Version 0.0.3
+Version 0.0.5
 
 | **HOME** | [DEVELOPMENT](./docs/Development.md)  | [HELP](./docs/help.md) | [ISSUES](./docs/issues.md) | [ToDo](./docs/ToDo.md) |
 
