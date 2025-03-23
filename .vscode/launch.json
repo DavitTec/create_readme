@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Bash-Debug (hardcoded script name)",
       "cwd": "${workspaceFolder}",
-      "program": "${workspaceFolder}/path/to/script.sh",
+      "program": "${workspaceFolder}/env_readme.sh",
       "args": []
     },
     {

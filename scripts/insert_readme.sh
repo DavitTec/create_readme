@@ -3,10 +3,17 @@
 VERSION="0.0.7-3" # Matches your local commit
 DATE=$(date '+%Y%m%d')
 
+# Setting Environment variables
+source env_readme.sh
+load_env_readme
+set_env_readme_key "ERR" "0"
+set_env_readme_key "DIR" "$(pwd)"
+save_env_readme
+
 # Default locations and settings
 BASE_TEMPLATE="README.md"
 TEMPLATES_STORE="${HOME}/Documents/Templates"
-ENV_FILE="$HOME/.insert_readme_env"
+#ENV_FILE="$HOME/.insert_readme_env"
 
 # Load previous ENV_README if it exists
 [ -f "$ENV_FILE" ] && source "$ENV_FILE"
@@ -20,8 +27,12 @@ create_base_template() {
     echo "Creating base template at $target"
     cat >"$target" <<EOF
 # Project README
+
 <!-- ID: BASE-TEMPLATE-001 -->
+
 This is a default README.md file created by insert_readme.sh v$VERSION
+
+
 EOF
 }
 
