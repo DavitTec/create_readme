@@ -4,7 +4,7 @@
 # - Tracks sub-script VERSIONs and displays them during deployment
 # - Main VERSION reported separately, not deployed as a script
 
-VERSION="0.0.6-16" # Main deploy script VERSION
+VERSION="0.0.6-17" # Main deploy script VERSION
 CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
 
@@ -16,6 +16,14 @@ SCRIPTS=(
   "test_caja:TEST CAJA"
   "test_caja_zenity:TEST CAJA ZENITY"
 )
+
+# Backup Before Deploying
+BACKUP_DIR="$HOME/.config/caja/scripts_backup_$(date +%Y%m%d_%H%M%S)"
+if [ -d "$CAJA_SCRIPTS_DIR" ]; then
+  echo "Backing up existing scripts to $BACKUP_DIR"
+  cp -r "$CAJA_SCRIPTS_DIR" "$BACKUP_DIR"
+fi
+
 
 # Check if CAJA is installed
 if ! command -v caja &>/dev/null; then
