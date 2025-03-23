@@ -1,6 +1,6 @@
 #!/bin/bash
 # insert_readme.sh
-VERSION="0.0.7-2" # Match your local version
+VERSION="0.0.7-3" # Matches your local commit
 DATE=$(date '+%Y%m%d')
 
 # Default locations and settings
