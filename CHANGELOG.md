@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7-2](https://github.com/DavitTec/create_readme/compare/v0.0.7-0...v0.0.7-2) (2025-03-23)
+
+
+### Features
+
+* add versions check [#0](https://github.com/DavitTec/create_readme/issues/0).0.7-0 ([2f2112d](https://github.com/DavitTec/create_readme/commit/2f2112dcc631242f80d51bd0b1de950131af711f))
+
 ### [0.0.7-0](https://github.com/DavitTec/create_readme/compare/v0.0.6...v0.0.7-0) (2025-03-23)
 
 ### [0.0.6](https://github.com/DavitTec/create_readme/compare/v0.0.6-15...v0.0.6) (2025-03-23)
