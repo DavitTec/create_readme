@@ -1,12 +1,18 @@
 #!/bin/bash
 
 # Insert
-VERSION="0.0.6-14"
+VERSION="0.0.6-15"
 CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
 
 # Scripts to install
-SCRIPTS=("insert_readme:INSERT README"  "create_readme:CREATE README" "test_zenity:TEST ZENITY")
+SCRIPTS=(
+  "insert_readme:INSERT README"
+  "create_readme:CREATE README"
+  "test_zenity:TEST ZENITY"
+  "test_caja:TEST CAJA"
+  "test_caja_zenity:TEST CAJA ZENITY"
+)
 
 # Check if CAJA is installed (checking for caja binary)
 if ! command -v caja &>/dev/null; then

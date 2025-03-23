@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # create_readme.sh
-VERSION="0.0.6-14"
+VERSION="0.0.6-15"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
 DEFAULT_TEMPLATE="basic"
@@ -28,15 +28,6 @@ if ! command -v zenity &>/dev/null; then
   echo "Error: Zenity is required but not installed" >&2
   exit 1
 fi
-
-# Test Zenity functionality (simple list)
-test_zenity() {
-  zenity --list --title="Test Zenity" --column="Options" --text="This is a Zenity test" "basic" "test" 2>/dev/null
-  if [ $? -ne 0 ]; then
-    echo "Error: Zenity test failed. Please check Zenity installation." >&2
-    exit 1
-  fi
-}
 
 # Function to show help
 show_help() {
@@ -120,8 +111,12 @@ create_readme() {
   if [ -f "$output_file" ]; then
     debug "README created successfully at $output_file"
     zenity --info --title="Success" --text="Created $output_file using $template template"
+    export ZENITY_TEST="SUCCESS"    # Set environment variable for feedback
+    echo "ZENITY_TEST=$ZENITY_TEST" # Echo for terminal feedback
   else
     zenity --error --title="Error" --text="Failed to verify $output_file after creation"
+    export ZENITY_TEST="FAILURE"
+    echo "ZENITY_TEST=$ZENITY_TEST"
     return 1
   fi
 }
@@ -183,9 +178,6 @@ main() {
     esac
   done
 
-  # Test Zenity
-  test_zenity
-
   local context=$(get_context)
 
   if [ -z "$context" ]; then
@@ -206,19 +198,16 @@ main() {
   debug "Templates available: $templates"
   debug "Launching Zenity dialog"
 
-  # Pass templates as arguments to Zenity
+  # Use proven Zenity list approach from test_zenity.sh
   local template
   template=$(zenity --list \
     --title="Select Template" \
     --text="Choose a template for $context" \
     --column="Template" \
-    --default-item="$DEFAULT_TEMPLATE" \
-    --width=300 --height=200 \
-    --timeout=30 \
     $templates 2>/dev/null)
 
   if [ $? -ne 0 ]; then
-    debug "Zenity dialog failed, timed out, or was cancelled"
+    debug "Zenity dialog failed or was cancelled"
     if [ "$DEBUG" = true ]; then
       template="$DEFAULT_TEMPLATE"
       debug "Falling back to default template: $template"

@@ -9,7 +9,7 @@
     "test:zenity": "bash ./scripts/test_zenity.sh",
     "release": "standard-version",
     "prelease": "standard-version -p ",
-    "deploy:caja": "bash ./scripts/insert"
+    "deploy": "bash ./scripts/insert"
   },
   "repository": {
     "type": "git",
