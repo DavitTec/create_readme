@@ -1,6 +1,11 @@
 #!/bin/bash
-
-# Insert
+# insert
+# TODO:  We need to capture each sub script's version number (ALL scriptes in "./scripts/*") as these script versions will go out of sync in the main "Package.json" development version
+#         of each script.
+#        then when deploying or INSERT is deployed, then terminal will disply each current version for distintion to the main app version.
+# FIX:   Check all script version first before deplying
+#
+# INSERT # TODO we may need to make this script name upper case for compatibility instead of "Insert"
 VERSION="0.0.6-15"
 CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
