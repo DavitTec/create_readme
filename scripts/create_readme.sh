@@ -31,7 +31,7 @@ fi
 
 # Function to show help
 show_help() {
-  zenity --info --title="Create Readme v$VERSION" \
+  zenity --info --title="Create Readme $VERSION" \
     --text="Create Readme - Version $VERSION\n\nUsage:\n  $0 [options]\n\nOptions:\n  -h, --help     Show this help\n  -v, --version  Show version\n  -d             Enable debug mode (uses $TESTDIR)"
 }
 

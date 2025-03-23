@@ -1,12 +1,6 @@
 #!/bin/bash
-# insert
-# NOTES for "insert" script development
-# TODO: We need to capture each sub-script's version number (ALL scripts in "./scripts/*") as these script versions will go out of sync with the main "Package.json" development version.
-#       Then, when deploying, the terminal will display each current version for distribution tracking.
-# FIX:  Check all script versions first before deploying
-# TODO: Consider renaming to "INSERT" for consistency (optional)
-
-VERSION="0.0.6-15" # Main deploy script version
+# INSERT
+VERSION="0.0.7-1" # Main deploy script version
 CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
 
@@ -46,15 +40,14 @@ for script in "${SCRIPTS[@]}"; do
     continue
   fi
 
-  # Extract sub-script version
-  SUB_VERSION=$(grep '^version=' "$SOURCE_PATH" | cut -d'"' -f2)
-  if [ -z "$SUB_VERSION" ]; then
-    SUB_VERSION="Unknown"
-  fi
+  # Extract sub-script version (default to "Unversioned" if missing)
+  SUB_VERSION=$(grep '^VERSION=' "$SOURCE_PATH" | cut -d'"' -f2)
+  SUB_VERSION="${SUB_VERSION:-Unversioned}"
 
   # Check existing version in target
   if [ -f "$TARGET_PATH" ]; then
-    EXISTING_VERSION=$(grep '^version=' "$TARGET_PATH" | cut -d'"' -f2)
+    EXISTING_VERSION=$(grep '^VERSION=' "$TARGET_PATH" | cut -d'"' -f2)
+    EXISTING_VERSION="${EXISTING_VERSION:-Unversioned}"
     if [ "$EXISTING_VERSION" = "$SUB_VERSION" ]; then
       echo "Script $TARGET_NAME (v$SUB_VERSION) already installed"
       continue
@@ -72,6 +65,3 @@ done
 
 echo "Installation complete"
 echo "Deployed with main version: $VERSION"
-
-# For Package.json:
-# "deploy:caja": "bash ./scripts/insert"

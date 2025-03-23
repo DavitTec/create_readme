@@ -363,7 +363,7 @@ If want to improve your Caja scripts, Here is the basic but an improved version 
 
 ```bash
 #!/bin/bash
-version=0.2
+VERSION=0.2
 # Source template file
 SRC="/home/david/Templates/markdown/README.md"
 # Current date in YYYYMMDD format

@@ -1,6 +1,6 @@
 #!/bin/bash
 # insert_readme.sh
-version="0.0.7-2"
+VERSION="0.0.7-2" # Match your local version
 DATE=$(date '+%Y%m%d')
 
 # Default locations and settings
@@ -12,16 +12,16 @@ ENV_FILE="$HOME/.insert_readme_env"
 [ -f "$ENV_FILE" ] && source "$ENV_FILE"
 
 # Default ENV_README
-ENV_README="${ENV_README:-ERR=0::DIR=$(pwd)::VER=$version}"
+ENV_README="${ENV_README:-ERR=0::DIR=$(pwd)::VER=$VERSION}"
 
 # Function to create a base template if missing
 create_base_template() {
     local target="$1"
     echo "Creating base template at $target"
-    cat > "$target" << 'EOF'
+    cat >"$target" <<EOF
 # Project README
 <!-- ID: BASE-TEMPLATE-001 -->
-This is a default README.md file created by insert_readme.sh v$version
+This is a default README.md file created by insert_readme.sh v$VERSION
 EOF
 }
 
@@ -31,9 +31,9 @@ FILE="${TARGET_DIR}/README.md"
 
 # Ensure target directory exists
 if [ ! -d "$TARGET_DIR" ]; then
-  echo "Error: Target directory $TARGET_DIR does not exist"
-  ENV_README="ERR=1::DIR=$TARGET_DIR"
-  exit 1
+    echo "Error: Target directory $TARGET_DIR does not exist"
+    ENV_README="ERR=1::DIR=$TARGET_DIR"
+    exit 1
 fi
 
 # Check and create template store directory
@@ -69,8 +69,8 @@ fi
 
 # Copy the template and verify
 if cp -n "$SRC" "$FILE"; then
-    echo "[v$version] Successfully created $FILE"
-    ENV_README="ERR=0::DIR=$TARGET_DIR::VER=$version::FILE=$FILE"
+    echo "[v$VERSION] Successfully created $FILE"
+    ENV_README="ERR=0::DIR=$TARGET_DIR::VER=$VERSION::FILE=$FILE"
 else
     echo "Error: Failed to create $FILE"
     ENV_README="ERR=1::DIR=$TARGET_DIR"
@@ -78,11 +78,11 @@ else
 fi
 
 # Persist ENV_README
-echo "export ENV_README=\"$ENV_README\"" > "$ENV_FILE"
+echo "export ENV_README=\"$ENV_README\"" >"$ENV_FILE"
 source "$ENV_FILE"
 echo "Session info: $ENV_README"
 
 # Attempt to refresh Caja
-touch "$TARGET_DIR"  # Update directory timestamp
+touch "$TARGET_DIR"
 
 exit 0

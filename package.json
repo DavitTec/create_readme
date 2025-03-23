@@ -1,6 +1,6 @@
 {
   "name": "create_readme",
-  "version": "0.0.7-0",
+  "version": "0.0.7-1",
   "description": "Script and templates to help you Create a README for a new or current project.",
   "homepage": "https://github.com/DavitTec/create_readme#readme",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "test:zenity": "bash ./scripts/test_zenity.sh",
     "release": "standard-version",
     "prelease": "standard-version -p ",
-    "deploy": "bash ./scripts/insert"
+    "deploy": "bash ./scripts/INSERT"
   },
   "repository": {
     "type": "git",
