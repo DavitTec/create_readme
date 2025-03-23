@@ -1,16 +1,16 @@
 #!/bin/bash
 # insert
-# TODO:  We need to capture each sub script's version number (ALL scriptes in "./scripts/*") as these script versions will go out of sync in the main "Package.json" development version
-#         of each script.
-#        then when deploying or INSERT is deployed, then terminal will disply each current version for distintion to the main app version.
-# FIX:   Check all script version first before deplying
-#
-# INSERT # TODO we may need to make this script name upper case for compatibility instead of "Insert"
-VERSION="0.0.6-15"
+# NOTES for "insert" script development
+# TODO: We need to capture each sub-script's version number (ALL scripts in "./scripts/*") as these script versions will go out of sync with the main "Package.json" development version.
+#       Then, when deploying, the terminal will display each current version for distribution tracking.
+# FIX:  Check all script versions first before deploying
+# TODO: Consider renaming to "INSERT" for consistency (optional)
+
+VERSION="0.0.6-15" # Main deploy script version
 CAJA_SCRIPTS_DIR="$HOME/.config/caja/scripts"
 SOURCE_DIR="./scripts"
 
-# Scripts to install
+# Scripts to install (format: "source_name:target_name")
 SCRIPTS=(
   "insert_readme:INSERT README"
   "create_readme:CREATE README"
@@ -19,16 +19,21 @@ SCRIPTS=(
   "test_caja_zenity:TEST CAJA ZENITY"
 )
 
-# Check if CAJA is installed (checking for caja binary)
+# Check if CAJA is installed
 if ! command -v caja &>/dev/null; then
   echo "Error: Caja file manager doesn't appear to be installed"
   exit 1
 fi
 
-# Create CAJA scripts directory if it doesn't exist
-mkdir -p "$CAJA_SCRIPTS_DIR"
+# Create CAJA scripts directory if it doesn’t exist
+mkdir -p "$CAJA_SCRIPTS_DIR" || {
+  echo "Error: Failed to create $CAJA_SCRIPTS_DIR"
+  exit 1
+}
 
-# Install each script
+echo "Deploying scripts (Main version: $VERSION)"
+
+# Install each script and capture versions
 for script in "${SCRIPTS[@]}"; do
   SOURCE_NAME="${script%%:*}"
   TARGET_NAME="${script##*:}"
@@ -41,24 +46,32 @@ for script in "${SCRIPTS[@]}"; do
     continue
   fi
 
-  # Check existing version
-  if [ -f "$TARGET_PATH" ]; then
-    EXISTING_VERSION=$(grep "VERSION=" "$TARGET_PATH" | cut -d'"' -f2)
-    if [ "$EXISTING_VERSION" = "$VERSION" ]; then
-      echo "Script $TARGET_NAME version $VERSION already installed"
-      continue
-    else
-      echo "Updating $TARGET_NAME from version $EXISTING_VERSION to $VERSION"
-    fi
+  # Extract sub-script version
+  SUB_VERSION=$(grep '^version=' "$SOURCE_PATH" | cut -d'"' -f2)
+  if [ -z "$SUB_VERSION" ]; then
+    SUB_VERSION="Unknown"
   fi
 
-  # Copy and configure the script - Make the script executable
+  # Check existing version in target
+  if [ -f "$TARGET_PATH" ]; then
+    EXISTING_VERSION=$(grep '^version=' "$TARGET_PATH" | cut -d'"' -f2)
+    if [ "$EXISTING_VERSION" = "$SUB_VERSION" ]; then
+      echo "Script $TARGET_NAME (v$SUB_VERSION) already installed"
+      continue
+    else
+      echo "Updating $TARGET_NAME from v$EXISTING_VERSION to v$SUB_VERSION"
+    fi
+  else
+    echo "Installing $TARGET_NAME (v$SUB_VERSION)"
+  fi
+
+  # Copy and configure the script
   cp "$SOURCE_PATH" "$TARGET_PATH"
   chmod +x "$TARGET_PATH"
-  echo "Installed $TARGET_NAME version $VERSION"
 done
 
 echo "Installation complete"
+echo "Deployed with main version: $VERSION"
 
-# For your Package.json, you can add this to the "scripts" section:
-# "deploy:caja": "bash ./scripts/Insert"
+# For Package.json:
+# "deploy:caja": "bash ./scripts/insert"
