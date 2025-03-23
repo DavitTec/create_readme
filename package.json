@@ -1,6 +1,6 @@
 {
   "name": "create_readme",
-  "version": "0.0.7-2",
+  "version": "0.0.7-3",
   "description": "Script and templates to help you Create a README for a new or current project.",
   "homepage": "https://github.com/DavitTec/create_readme#readme",
   "main": "index.js",
