@@ -1,0 +1,11 @@
+digraph G {
+    node [shape=box];
+    deploy [label="Deploy Script (INSERT)"];
+    insert_readme [label="insert_readme.sh"];
+    create_readme [label="create_readme.sh"];
+    deploy -> insert_readme [label="Deploys"];
+    deploy -> create_readme [label="Deploys"];
+    user [label="User"];
+    user -> insert_readme [label="Runs via Caja"];
+    user -> create_readme [label="Runs via Caja"];
+}

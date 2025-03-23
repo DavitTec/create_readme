@@ -1,6 +1,6 @@
 #!/bin/bash
 # insert_readme.sh
-version="0.0.7-4"
+VERSION="0.0.7-4"
 DATE=$(date '+%Y%m%d')
 
 # Source env_readme.sh
@@ -10,7 +10,7 @@ load_env_readme
 # Set initial keys
 set_env_readme_key "ERR" "0"
 set_env_readme_key "DIR" "$(pwd)"
-set_env_readme_key "VER" "$version"
+set_env_readme_key "VER" "$VERSION"
 
 # Default locations and settings
 BASE_TEMPLATE="README.md"
@@ -22,8 +22,10 @@ create_base_template() {
     echo "Creating base template at $target"
     cat >"$target" <<EOF
 # Project README
+
 <!-- ID: BASE-TEMPLATE-001 -->
-This is a default README.md file created by insert_readme.sh v$version
+
+This is a default README.md file created by insert_readme.sh v$VERSION
 EOF
 }
 
@@ -71,7 +73,7 @@ fi
 
 # Copy the template and verify
 if cp -n "$SRC" "$FILE"; then
-    echo "[v$version] Successfully created $FILE"
+    echo "[v$VERSION] Successfully created $FILE"
     set_env_readme_key "FILE" "$FILE"
 else
     echo "Error: Failed to create $FILE"

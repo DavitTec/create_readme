@@ -1,6 +1,6 @@
 #!/bin/bash
 # env_readme.sh
-VERSION="0.0.3"  # Increment version as per user's advice
+VERSION="0.0.3" # Increment version as per user's advice
 
 # Define the file path for persistent storage
 ENV_README_FILE=".env_readme"
@@ -8,13 +8,16 @@ ENV_README_FILE=".env_readme"
 # Function to clean ENV_README by removing empty parts
 clean_env_readme() {
   local parts=()
-  IFS='::' read -ra temp <<< "$ENV_README"
+  IFS='::' read -ra temp <<<"$ENV_README"
   for part in "${temp[@]}"; do
     if [ -n "$part" ]; then
       parts+=("$part")
     fi
   done
-  ENV_README=$(IFS='::'; echo "${parts[*]}")
+  ENV_README=$(
+    IFS='::'
+    echo "${parts[*]}"
+  )
 }
 
 # Function to load ENV_README from the file
@@ -23,13 +26,13 @@ load_env_readme() {
     ENV_README=$(cat "$ENV_README_FILE")
     clean_env_readme
   else
-    ENV_README="ERR=0"  # Default value
+    ENV_README="ERR=0" # Default value
   fi
 }
 
 # Function to save ENV_README to the file
 save_env_readme() {
-  printf '%s\n' "$ENV_README" > "$ENV_README_FILE"
+  printf '%s\n' "$ENV_README" >"$ENV_README_FILE"
 }
 
 # Function to set a key-value pair in ENV_README
