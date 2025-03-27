@@ -110,7 +110,10 @@ if [ "$MODE" = "test" ]; then
         echo "## Tasks"
         echo "object "
         echo "echo"
-        jq -r '.placeholders | to_entries | .[] | "\(.value.order) \"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|\""' variables.json | sort -n
+
+        jq -r '.placeholders | to_entries | .[] | "\(.value.order) \"\(.key | ascii_downcase):§SCRIPT_\(.key)(0)|\""' variables.json | sort -n
+
+        # currnet jq -r '.placeholders | to_entries | .[] | "\(.value.order) \"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|\""' variables.json | sort -n
         echo ""
         echo "This is a TEST file to check capture and replacement of all variables"
         echo ""
