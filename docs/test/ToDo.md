@@ -38,6 +38,21 @@ Replace **VERSION:** §VERSION(2) with the version number
 Replace **LOCATION:** §SCRIPT_LOCATION(2) with the file path
 Replace **DOCS:** §SCRIPT_DOCS(2) with documentation link (currently empty)
 
+
+### TEST for 2nd Script
+
+Replace **NAME:** §SCRIPT_NAME(n) with the filename
+Replace **STATE:**  §SCRIPT_STATE(n) with the state (or "unknown")
+Replace **VERSION:** §VERSION(n) with the version number
+Replace **LOCATION:** §SCRIPT_LOCATION(n) with the file path
+Replace **DOCS:** §SCRIPT_DOCS(n) with documentation link (currently empty)
+
+
+
+..
+
+..
+
 ---
 ### TEST for unknown or 99th Script
 
