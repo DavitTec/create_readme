@@ -194,7 +194,7 @@ if [ "$MODE" = "test" ]; then
 ## Tasks
 object 
 echo
-$(jq -r '.placeholders | to_entries | .[] | "\(.value.order) \"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|"' variables.json | sort -n)
+$(jq -r '.placeholders | to_entries | .[] | "\(.value.order) \\\"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|\\\""' variables.json | sort -n)
 
 This is a TEST file to check capture and replacement of all variables
 
@@ -207,7 +207,7 @@ EOF
         cat << EOF >> "$TARGET_TODO"
 
 ### TEST for Script $i
-$(jq -r '.placeholders | to_entries | .[] | if .key == "VERSION" then "- **SCRIPT \(.key)**: §SCRIPT_\(.key)($i)" else "- **\(.key)**: §SCRIPT_\(.key)($i)" end' variables.json)
+$(jq -r '.placeholders | to_entries | .[] | if .key == "VERSION" then "- **SCRIPT \(.key)**: §SCRIPT_\(.key)('$i')" else "- **\(.key)**: §SCRIPT_\(.key)('$i')" end' variables.json)
 - **LOCATION**: §SCRIPT_LOCATION($i)
 $case_notes
 
