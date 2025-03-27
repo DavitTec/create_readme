@@ -1,14 +1,33 @@
 #!/bin/bash
 # update_TODO.sh
-VERSION="0.0.4"  # Incremented from 0.0.3 (minor change for new features)
+VERSION="0.0.5"  # Incremented from 0.0.4 (minor change for template generation)
 
-# Source environment variables
+# Source package.json variables using jq (assuming jq is installed)
+if [ -f "package.json" ] && command -v jq >/dev/null 2>&1; then
+    PKG_VERSION=$(jq -r '.version' package.json)
+    PKG_REPO_URL=$(jq -r '.repository.url' package.json | sed 's/git+//')
+    PKG_AUTHOR=$(jq -r '.author' package.json)
+else
+    echo "Warning: package.json not found or jq not installed. Using .env_test defaults."
+fi
+
+# Source environment variables from .env_test (fallback)
 if [ -f ".env_test" ]; then
     source .env_test
 else
     echo "Error: .env_test file not found"
     exit 1
 fi
+
+# Override with package.json values if available
+SOURCE_DIR=${SOURCE_DIR:-./scripts}
+DOCS_DIR=${DOCS_DIR:-./docs}
+TEST_DIR=${TEST_DIR:-./docs/test}
+TODO_FILE=${TODO_FILE:-./docs/ToDo.md}
+TEST_TODO_FILE=${TEST_TODO_FILE:-./docs/test/ToDo_TEST_.md}  # Changed to ToDo_TEST_.md
+PKG_VERSION=${PKG_VERSION:-$SCRIPT_VERSION_DEFAULT}
+PKG_REPO_URL=${PKG_REPO_URL:-$REPO_URL}
+PKG_AUTHOR=${PKG_AUTHOR:-$SCRIPT_AUTHOR_DEFAULT}
 
 # Parse command-line arguments
 OPTIONS=""
@@ -26,26 +45,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Determine mode (testing or live)
-if [ -d "$TEST_DIR" ] && [ -f "$TEST_TODO_FILE" ]; then
+if [ -d "$TEST_DIR" ]; then
     MODE="test"
     TARGET_TODO="$TEST_TODO_FILE"
-    TARGET_TEMP="$TEST_TEMP_FILE"
+    TARGET_TEMP="$TEST_TODO_FILE.tmp"
     echo "Running in TEST mode: Updating $TARGET_TODO"
 else
     MODE="live"
     TARGET_TODO="$TODO_FILE"
-    TARGET_TEMP="$TEMP_FILE"
+    TARGET_TEMP="$TODO_FILE.tmp"
     echo "Running in LIVE mode: Updating $TARGET_TODO"
 fi
 
-# Check if required directories and files exist
+# Check if required directories exist
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Error: Scripts directory not found at $SOURCE_DIR"
-    exit 1
-fi
-
-if [ ! -f "$TARGET_TODO" ]; then
-    echo "Error: ToDo.md not found at $TARGET_TODO"
     exit 1
 fi
 
@@ -66,7 +80,7 @@ get_Docs() {
     elif [ -f "$DOCS_DIR/help.md" ]; then
         output="$DOCS_DIR/help.md"
     else
-        output="$SCRIPT_DOCS_DEFAULT"  # Use default from .env_test
+        output="$SCRIPT_DOCS_DEFAULT"
     fi
 
     echo "$output"
@@ -77,11 +91,11 @@ extract_script_info() {
     local file="$1"
     local basename=$(basename "$file")
     local name="${basename}"
-    local state="$SCRIPT_STATE_DEFAULT"  # Default from .env_test
-    local version="$SCRIPT_VERSION_DEFAULT"  # Default from .env_test
+    local state="$SCRIPT_STATE_DEFAULT"
+    local version="$SCRIPT_VERSION_DEFAULT"
     local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
     local docs=$(get_Docs "$file")
-    local author="$SCRIPT_AUTHOR_DEFAULT"  # Default from .env_test
+    local author="$SCRIPT_AUTHOR_DEFAULT"
 
     while IFS= read -r line; do
         if [[ "$line" =~ VERSION[[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
@@ -101,6 +115,15 @@ extract_script_info() {
 # Build scripts object (associative array)
 declare -A scripts
 
+# Index 0 defaults (no script)
+scripts["SCRIPT_NAME(0)"]="$SCRIPT_NAME_DEFAULT"
+scripts["SCRIPT_STATE(0)"]="$SCRIPT_STATE_DEFAULT"
+scripts["VERSION(0)"]="$SCRIPT_VERSION_DEFAULT"
+scripts["SCRIPT_LOCATION(0)"]="$SCRIPT_LOCATION_DEFAULT"
+scripts["SCRIPT_DOCS(0)"]="$SCRIPT_DOCS_DEFAULT"
+scripts["SCRIPT_AUTHOR(0)"]="$SCRIPT_AUTHOR_DEFAULT"
+
+# Process script files starting at index 1
 index=1
 for script_file in "$SOURCE_DIR"/*; do
     if [ -f "$script_file" ]; then
@@ -115,15 +138,44 @@ for script_file in "$SOURCE_DIR"/*; do
     fi
 done
 
-# Set defaults for undefined §VARIABLES
-for i in $(seq 1 99); do
-    [ -z "${scripts[SCRIPT_NAME($i)]}" ] && scripts["SCRIPT_NAME($i)"]="$SCRIPT_NAME_DEFAULT"
-    [ -z "${scripts[SCRIPT_STATE($i)]}" ] && scripts["SCRIPT_STATE($i)"]="$SCRIPT_STATE_DEFAULT"
-    [ -z "${scripts[VERSION($i)]}" ] && scripts["VERSION($i)"]="$SCRIPT_VERSION_DEFAULT"
-    [ -z "${scripts[SCRIPT_LOCATION($i)]}" ] && scripts["SCRIPT_LOCATION($i)"]="$SCRIPT_LOCATION_DEFAULT"
-    [ -z "${scripts[SCRIPT_DOCS($i)]}" ] && scripts["SCRIPT_DOCS($i)"]="$SCRIPT_DOCS_DEFAULT"
-    [ -z "${scripts[SCRIPT_AUTHOR($i)]}" ] && scripts["SCRIPT_AUTHOR($i)"]="$SCRIPT_AUTHOR_DEFAULT"
-done
+# Generate ToDo_TEST_.md template in test mode
+if [ "$MODE" = "test" ]; then
+    mkdir -p "$TEST_DIR"
+    cat << EOF > "$TARGET_TODO"
+# Todo
+## Tasks
+object 
+echo
+1 "name:\$name|
+2 state:\$state|
+3 version:\$version|
+4 size:\$size|
+5 docs:\$docs|
+6 author:\$author"
+
+This is a TEST file to check capture and replacement of all variables
+
+---- **TEST** ----
+EOF
+
+    # Dynamically add test sections for each script (including index 0)
+    for i in $(seq 0 $((index-1))); do
+        cat << EOF >> "$TARGET_TODO"
+
+### TEST for Script $i
+
+Replace **NAME:** §SCRIPT_NAME($i) with the §SCRIPT_NAME(0)
+Replace **STATE:** §SCRIPT_STATE($i) with the §SCRIPT_STATE(0)
+Replace **VERSION:** §VERSION($i) with the §VERSION(0)
+Replace **LOCATION:** §SCRIPT_LOCATION($i) with the §SCRIPT_LOCATION(0)
+Replace **DOCS:** §SCRIPT_DOCS($i) with the §SCRIPT_DOCS(0)
+Replace **AUTHOR:** §SCRIPT_AUTHOR($i) with the §SCRIPT_AUTHOR(0)
+
+Check format: 
+  - [ ] develop a [§SCRIPT_NAME($i)](§SCRIPT_LOCATION($i))-§VERSION($i)([docs](§SCRIPT_DOCS($i))) (§SCRIPT_STATE($i))
+EOF
+    done
+fi
 
 # Update ToDo.md with §VARIABLES
 while IFS= read -r line; do
