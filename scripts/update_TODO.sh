@@ -1,12 +1,17 @@
 #!/bin/bash
 # update_TODO.sh
-VERSION="0.0.10"  # Incremented from 0.0.9 (fixed jq and variable replacement)
+VERSION="0.0.11"  # Incremented for modularization and fixes
 
-# Check for jq (required for JSON parsing)
+# Check for jq
 if ! command -v jq >/dev/null 2>&1; then
-    echo "Error: jq is required for JSON parsing. Please install it (e.g., 'sudo apt install jq')."
+    echo "Error: jq is required. Install it (e.g., 'sudo apt install jq')."
     exit 1
 fi
+
+# Source external functions
+for func in src/*.sh; do
+    [ -f "$func" ] && source "$func"
+done
 
 # Load settings from package.json
 if [ -f "package.json" ]; then
@@ -28,7 +33,7 @@ else
     PKG_AUTHOR="unknown"
 fi
 
-# Load variables from variables.json
+# Load config from variables.json
 if [ -f "variables.json" ]; then
     eval "$(jq -r '.config | to_entries | .[] | "export \(.key)=\(.value.value)"' variables.json)"
 else
@@ -40,22 +45,13 @@ fi
 OPTIONS=""
 while [[ $# -gt 0 ]]; do
     case $1 in
-        -d|--delete)
-            OPTIONS="$OPTIONS delete"
-            shift
-            ;;
-        --fix-case)
-            OPTIONS="$OPTIONS fix-case"
-            shift
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
+        -d|--delete) OPTIONS="$OPTIONS delete"; shift;;
+        --fix-case) OPTIONS="$OPTIONS fix-case"; shift;;
+        *) echo "Unknown option: $1"; exit 1;;
     esac
 done
 
-# Determine mode (testing or live)
+# Determine mode
 if [ -d "$TEST_DIR" ]; then
     MODE="test"
     TARGET_TODO="$TEST_TODO_FILE"
@@ -69,106 +65,23 @@ else
     echo "Running in LIVE mode: Updating $TARGET_TODO"
 fi
 
-# Check if required directories exist
+# Check directories
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Error: Scripts directory not found at $SOURCE_DIR"
     exit 1
 fi
 
-# Function to normalize case based on CASE_SENSITIVE
-normalize_case() {
-    local value="$1"
-    if [ "$CASE_SENSITIVE" = "false" ]; then
-        echo "$value" | tr '[:upper:]' '[:lower:]'
-    else
-        echo "$value"
-    fi
-}
-
-# Function to extract documentation version
-get_Doc_Version() {
-    local doc_file="$1"
-    local version="unknown"
-    if [ -f "$doc_file" ]; then
-        if [ "$CASE_SENSITIVE" = "true" ]; then
-            version=$(grep -oP 'Version:\s*\K[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?' "$doc_file" || echo "unknown")
-        else
-            version=$(grep -i -oP '[Vv][Ee][Rr][Ss][Ii][Oo][Nn]:\s*\K[0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?' "$doc_file" || echo "unknown")
-        fi
-    fi
-    echo "$version"
-}
-
-# Function to extract info from script files
-extract_script_info() {
-    local file="$1"
-    local basename=$(basename "$file")
-    local name="$basename"
-    local state=$(jq -r '.placeholders.STATE.value' variables.json)
-    local version=$(jq -r '.placeholders.VERSION.value' variables.json)
-    local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
-    local docs="${DOCS_DIR}/${basename%.sh}_help.md"
-    local author="$PKG_AUTHOR"
-    local readme="${DOCS_DIR}/${basename%.sh}_Readme.md"
-    local dev_doc="${DOCS_DIR}/${basename%.sh}_Developer.md"
-    local case_notes=""
-
-    # Extract script metadata
-    while IFS= read -r line; do
-        if [ "$CASE_SENSITIVE" = "true" ]; then
-            if [[ "$line" =~ VERSION[[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
-                version="${BASH_REMATCH[1]}"
-            elif [[ "$line" =~ [Vv][Ee][Rr][Ss][Ii][Oo][Nn][[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
-                case_notes="$case_notes TODO: VERSION case mismatch in $file (expected 'VERSION')\n"
-            fi
-            if [[ "$line" =~ Author:[[:space:]]*(.*) ]]; then
-                author="${BASH_REMATCH[1]}"
-            elif [[ "$line" =~ [Aa][Uu][Tt][Hh][Oo][Rr]:[[:space:]]*(.*) ]]; then
-                case_notes="$case_notes TODO: Author case mismatch in $file (expected 'Author:')\n"
-            fi
-            if [[ "$line" =~ State:[[:space:]]*(.*) ]]; then
-                state="${BASH_REMATCH[1]}"
-            elif [[ "$line" =~ [Ss][Tt][Aa][Tt][Ee]:[[:space:]]*(.*) ]]; then
-                case_notes="$case_notes TODO: State case mismatch in $file (expected 'State:')\n"
-            fi
-        else
-            if [[ "$line" =~ [Vv][Ee][Rr][Ss][Ii][Oo][Nn][[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
-                version="${BASH_REMATCH[1]}"
-            fi
-            if [[ "$line" =~ [Aa][Uu][Tt][Hh][Oo][Rr]:[[:space:]]*(.*) ]]; then
-                author="${BASH_REMATCH[1]}"
-            fi
-            if [[ "$line" =~ [Ss][Tt][Aa][Tt][Ee]:[[:space:]]*(.*) ]]; then
-                state="${BASH_REMATCH[1]}"
-            fi
-        fi
-    done < "$file"
-
-    # Clean up state to remove artifacts
-    state=$(echo "$state" | tr -d '\n"')
-
-    # Get doc versions
-    local readme_version=$(get_Doc_Version "$readme")
-    local dev_doc_version=$(get_Doc_Version "$dev_doc")
-    local help_version=$(get_Doc_Version "$docs")
-
-    echo "name:$name|state:$state|version:$version|size:$size|docs:$docs|author:$author|readme:$readme|readme_version:$readme_version|dev_doc:$dev_doc|dev_doc_version:$dev_doc_version|help_version:$help_version|case_notes:$case_notes"
-}
-
-# Build scripts object dynamically from variables.json placeholders
+# Build scripts object
 declare -A scripts
-
-# Load placeholder defaults (index 0)
 while IFS="=" read -r key value; do
     scripts["SCRIPT_$key(0)"]="$value"
 done < <(jq -r '.placeholders | to_entries | .[] | "\(.key)=\(.value.value)"' variables.json)
 scripts["SCRIPT_LOCATION(0)"]=$(jq -r '.placeholders.LOCATION.value' variables.json)
 
-# Process script files starting at index 1
 index=1
 for script_file in "$SOURCE_DIR"/*; do
     if [ -f "$script_file" ]; then
-        info=$(extract_script_info "$script_file")
+        info=$(extract_script_info "$script_file" "$DOCS_DIR" "$PKG_AUTHOR" "$CASE_SENSITIVE")
         while IFS="|" read -r pair; do
             key=$(echo "$pair" | cut -d':' -f1)
             value=$(echo "$pair" | cut -d':' -f2-)
@@ -179,7 +92,7 @@ for script_file in "$SOURCE_DIR"/*; do
     fi
 done
 
-# Generate ToDo_TEST_.md template in test mode
+# Generate ToDo_TEST_.md
 if [ "$MODE" = "test" ]; then
     mkdir -p "$TEST_DIR"
     {
@@ -204,7 +117,6 @@ if [ "$MODE" = "test" ]; then
         echo "---- **TEST** ----"
     } > "$TARGET_TODO"
 
-    # Dynamically add test sections for each script
     for i in $(seq 0 $((index-1))); do
         case_notes="${scripts[SCRIPT_CASE_NOTES($i)]}"
         cat << EOF >> "$TARGET_TODO"
@@ -224,29 +136,11 @@ if [ "$MODE" = "test" ]; then
 - **LOCATION**: ${scripts[SCRIPT_LOCATION($i)]}
 $case_notes
 
-Check format: 
+Check format:
   - [ ] develop a [${scripts[SCRIPT_NAME($i)]}](${scripts[SCRIPT_LOCATION($i)]})-${scripts[SCRIPT_VERSION($i)]}([docs](${scripts[SCRIPT_DOCS($i)]})) (${scripts[SCRIPT_STATE($i)]})
 EOF
     done
 fi
-
-# Update ToDo.md with §VARIABLES
-while IFS= read -r line; do
-    new_line="$line"
-    for key in "${!scripts[@]}"; do
-        if [[ "$new_line" =~ §"$key" ]]; then
-            value="${scripts[$key]}"
-            new_line="${new_line//§$key/$value}"
-        fi
-    done
-    if [ "$EOL" = "CRLF" ]; then
-        echo -ne "$new_line\r\n"
-    else
-        echo "$new_line"
-    fi
-done < "$TARGET_TODO" > "$TARGET_TEMP"
-
-mv "$TARGET_TEMP" "$TARGET_TODO"
 
 # Handle options
 if [[ "$OPTIONS" =~ delete ]] && [ "$MODE" = "test" ]; then
