@@ -1,6 +1,6 @@
 #!/bin/bash
 # update_TODO.sh
-VERSION="0.0.9"  # Incremented from 0.0.8 (case/localization fixes)
+VERSION="0.0.10"  # Incremented from 0.0.9 (fixed jq and variable replacement)
 
 # Check for jq (required for JSON parsing)
 if ! command -v jq >/dev/null 2>&1; then
@@ -15,7 +15,7 @@ if [ -f "package.json" ]; then
     LANG=$(jq -r '.settings.LANG // "en-GB"' package.json)
     EOL=$(jq -r '.settings.EOL // "LF"' package.json)
     PKG_VERSION=$(jq -r '.version // "unknown"' package.json)
-    PKG_REPO_URL=$(jq -r '.repository.url // "unknown" | sub("git+"; "")' package.json)
+    PKG_REPO_URL=$(jq -r '.repository.url // "unknown" | sub("git\\+"; "")' package.json)
     PKG_AUTHOR=$(jq -r '.author // "unknown"' package.json)
 else
     echo "Warning: package.json not found. Using defaults."
@@ -144,6 +144,9 @@ extract_script_info() {
         fi
     done < "$file"
 
+    # Clean up state to remove artifacts
+    state=$(echo "$state" | tr -d '\n"')
+
     # Get doc versions
     local readme_version=$(get_Doc_Version "$readme")
     local dev_doc_version=$(get_Doc_Version "$dev_doc")
@@ -179,27 +182,27 @@ done
 # Generate ToDo_TEST_.md template in test mode
 if [ "$MODE" = "test" ]; then
     mkdir -p "$TEST_DIR"
-    cat << EOF > "$TARGET_TODO"
-# Todo
-## Package Info
-- Package Version: $PKG_VERSION
-- Repository: $PKG_REPO_URL
-- Author: $PKG_AUTHOR
-- Settings:
-  - Case Sensitive: $CASE_SENSITIVE
-  - Localization: $LOC
-  - Language: $LANG
-  - Line Ending: $EOL
-
-## Tasks
-object 
-echo
-$(jq -r '.placeholders | to_entries | .[] | "\(.value.order) \\\"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|\\\""' variables.json | sort -n)
-
-This is a TEST file to check capture and replacement of all variables
-
----- **TEST** ----
-EOF
+    {
+        echo "# Todo"
+        echo "## Package Info"
+        echo "- Package Version: $PKG_VERSION"
+        echo "- Repository: $PKG_REPO_URL"
+        echo "- Author: $PKG_AUTHOR"
+        echo "- Settings:"
+        echo "  - Case Sensitive: $CASE_SENSITIVE"
+        echo "  - Localization: $LOC"
+        echo "  - Language: $LANG"
+        echo "  - Line Ending: $EOL"
+        echo ""
+        echo "## Tasks"
+        echo "object "
+        echo "echo"
+        jq -r '.placeholders | to_entries | .[] | "\(.value.order) \"\(.key | ascii_downcase):\$\(.key | ascii_downcase)|\""' variables.json | sort -n
+        echo ""
+        echo "This is a TEST file to check capture and replacement of all variables"
+        echo ""
+        echo "---- **TEST** ----"
+    } > "$TARGET_TODO"
 
     # Dynamically add test sections for each script
     for i in $(seq 0 $((index-1))); do
@@ -207,12 +210,22 @@ EOF
         cat << EOF >> "$TARGET_TODO"
 
 ### TEST for Script $i
-$(jq -r '.placeholders | to_entries | .[] | if .key == "VERSION" then "- **SCRIPT \(.key)**: §SCRIPT_\(.key)('$i')" else "- **\(.key)**: §SCRIPT_\(.key)('$i')" end' variables.json)
-- **LOCATION**: §SCRIPT_LOCATION($i)
+- **NAME**: ${scripts[SCRIPT_NAME($i)]}
+- **STATE**: ${scripts[SCRIPT_STATE($i)]}
+- **SCRIPT VERSION**: ${scripts[SCRIPT_VERSION($i)]}
+- **SIZE**: ${scripts[SCRIPT_SIZE($i)]}
+- **DOCS**: ${scripts[SCRIPT_DOCS($i)]}
+- **AUTHOR**: ${scripts[SCRIPT_AUTHOR($i)]}
+- **README**: ${scripts[SCRIPT_README($i)]}
+- **README_VERSION**: ${scripts[SCRIPT_README_VERSION($i)]}
+- **DEV_DOC**: ${scripts[SCRIPT_DEV_DOC($i)]}
+- **DEV_DOC_VERSION**: ${scripts[SCRIPT_DEV_DOC_VERSION($i)]}
+- **HELP_VERSION**: ${scripts[SCRIPT_HELP_VERSION($i)]}
+- **LOCATION**: ${scripts[SCRIPT_LOCATION($i)]}
 $case_notes
 
 Check format: 
-  - [ ] develop a [§SCRIPT_NAME($i)](§SCRIPT_LOCATION($i))-§SCRIPT_VERSION($i)([docs](§SCRIPT_DOCS($i))) (§SCRIPT_STATE($i))
+  - [ ] develop a [${scripts[SCRIPT_NAME($i)]}](${scripts[SCRIPT_LOCATION($i)]})-${scripts[SCRIPT_VERSION($i)]}([docs](${scripts[SCRIPT_DOCS($i)]})) (${scripts[SCRIPT_STATE($i)]})
 EOF
     done
 fi
