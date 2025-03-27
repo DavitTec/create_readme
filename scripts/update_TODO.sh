@@ -140,10 +140,20 @@ if [ "$MODE" = "test" ]; then
 $case_notes
 
 Check format:
-  - [ ] develop a [${scripts[SCRIPT_NAME($i)]}](${scripts[SCRIPT_LOCATION($i)]})-${scripts[SCRIPT_VERSION($i)]}([docs](${scripts[SCRIPT_DOCS($i)]})) (${scripts[SCRIPT_STATE($i)]})
+## TODO To fix Check format section line 143 (a) or (b) in update_TODO.sh
+# resolve (a)- [ ] develop a [script_name](script_location)-version([docs](docs_path)) state
+# resolve (b)- [ ] develop a [script_name](script_location) - version: version, [docs](docs_path), state: state.
+
+echo "  - [ ] develop a [${scripts[SCRIPT_NAME($i)]}](${scripts[SCRIPT_LOCATION($i)]}) - version: ${scripts[SCRIPT_VERSION($i)]}, [docs](${scripts[SCRIPT_DOCS($i)]}), state: ${scripts[SCRIPT_STATE($i)]}"
+
 EOF
     done
 fi
+
+# To verify the scripts array, add before the replacement loop:
+for key in "${!scripts[@]}"; do
+    echo "$key: ${scripts[$key]}"
+done
 
 # Handle options
 if [[ "$OPTIONS" =~ delete ]] && [ "$MODE" = "test" ]; then

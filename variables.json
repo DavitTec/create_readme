@@ -21,12 +21,12 @@
       "description": "Main ToDo file for live mode"
     },
     "TEST_TODO_FILE": {
-      "value": "./docs/test/ToDo_TEST_.md",
+      "value": "./docs/test/ToDo_TEST.md",
       "type": "string",
       "description": "Test ToDo file"
     },
     "TEMPLATE_DIR": {
-      "value": "$HOME/Templates/markdown",
+      "value": "/home/david/Templates/markdown",
       "type": "string",
       "description": "Template directory"
     },
@@ -36,7 +36,7 @@
       "description": "Default template name"
     },
     "TESTDIR": {
-      "value": "$HOME/Templates/markdown/test",
+      "value": "/home/david/Templates/markdown/test",
       "type": "string",
       "description": "Test template directory"
     },
