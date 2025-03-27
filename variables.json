@@ -1,0 +1,123 @@
+{
+  "config": {
+    "SOURCE_DIR": {
+      "value": "./scripts",
+      "type": "string",
+      "description": "Directory containing script files"
+    },
+    "DOCS_DIR": {
+      "value": "./docs",
+      "type": "string",
+      "description": "Directory for production documentation"
+    },
+    "TEST_DIR": {
+      "value": "./docs/test",
+      "type": "string",
+      "description": "Directory for test documentation"
+    },
+    "TODO_FILE": {
+      "value": "./docs/ToDo.md",
+      "type": "string",
+      "description": "Main ToDo file for live mode"
+    },
+    "TEST_TODO_FILE": {
+      "value": "./docs/test/ToDo_TEST_.md",
+      "type": "string",
+      "description": "Test ToDo file"
+    },
+    "TEMPLATE_DIR": {
+      "value": "$HOME/Templates/markdown",
+      "type": "string",
+      "description": "Template directory"
+    },
+    "DEFAULT_TEMPLATE": {
+      "value": "basic",
+      "type": "string",
+      "description": "Default template name"
+    },
+    "TESTDIR": {
+      "value": "$HOME/Templates/markdown/test",
+      "type": "string",
+      "description": "Test template directory"
+    },
+    "DEBUG": {
+      "value": "false",
+      "type": "boolean",
+      "description": "Debug mode toggle"
+    }
+  },
+  "placeholders": {
+    "NAME": {
+      "value": "unknown_script",
+      "type": "string",
+      "order": 1,
+      "description": "Script name"
+    },
+    "STATE": {
+      "value": "unknown",
+      "type": "string",
+      "order": 2,
+      "description": "Script state"
+    },
+    "VERSION": {
+      "value": "0.0.0",
+      "type": "string",
+      "order": 3,
+      "description": "Script version"
+    },
+    "SIZE": {
+      "value": "0",
+      "type": "integer",
+      "order": 4,
+      "description": "Script file size"
+    },
+    "DOCS": {
+      "value": "No documentation available",
+      "type": "string",
+      "order": 5,
+      "description": "Help documentation path"
+    },
+    "AUTHOR": {
+      "value": "unknown_author",
+      "type": "string",
+      "order": 6,
+      "description": "Script author"
+    },
+    "README": {
+      "value": "No README available",
+      "type": "string",
+      "order": 7,
+      "description": "README file path"
+    },
+    "README_VERSION": {
+      "value": "unknown",
+      "type": "string",
+      "order": 8,
+      "description": "README version"
+    },
+    "DEV_DOC": {
+      "value": "No developer doc available",
+      "type": "string",
+      "order": 9,
+      "description": "Developer doc path"
+    },
+    "DEV_DOC_VERSION": {
+      "value": "unknown",
+      "type": "string",
+      "order": 10,
+      "description": "Developer doc version"
+    },
+    "HELP_VERSION": {
+      "value": "unknown",
+      "type": "string",
+      "order": 11,
+      "description": "Help doc version"
+    },
+    "LOCATION": {
+      "value": "unknown_location",
+      "type": "string",
+      "order": 12,
+      "description": "Script file location"
+    }
+  }
+}
