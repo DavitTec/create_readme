@@ -1,101 +1,101 @@
 #!/bin/bash
 # update_TODO.sh
-VERSION="0.0.3" # Increment from 0.0.2 (previous) to 0.0.3 (minor change)
+VERSION="0.0.4"  # Incremented from 0.0.3 (minor change for new features)
 
 # Source environment variables
 if [ -f ".env_test" ]; then
-  source .env_test
+    source .env_test
 else
-  echo "Error: .env_test file not found"
-  exit 1
+    echo "Error: .env_test file not found"
+    exit 1
 fi
 
 # Parse command-line arguments
-DELETE_FLAG=""
+OPTIONS=""
 while [[ $# -gt 0 ]]; do
-  case $1 in
-  -d | --delete)
-    DELETE_FLAG="true"
-    shift
-    ;;
-  *)
-    echo "Unknown option: $1"
-    exit 1
-    ;;
-  esac
+    case $1 in
+        -d|--delete)
+            OPTIONS="$OPTIONS delete"
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
 done
 
 # Determine mode (testing or live)
 if [ -d "$TEST_DIR" ] && [ -f "$TEST_TODO_FILE" ]; then
-  MODE="test"
-  TARGET_TODO="$TEST_TODO_FILE"
-  TARGET_TEMP="$TEST_TEMP_FILE"
-  echo "Running in TEST mode: Updating $TARGET_TODO"
+    MODE="test"
+    TARGET_TODO="$TEST_TODO_FILE"
+    TARGET_TEMP="$TEST_TEMP_FILE"
+    echo "Running in TEST mode: Updating $TARGET_TODO"
 else
-  MODE="live"
-  TARGET_TODO="$TODO_FILE"
-  TARGET_TEMP="$TEMP_FILE"
-  echo "Running in LIVE mode: Updating $TARGET_TODO"
+    MODE="live"
+    TARGET_TODO="$TODO_FILE"
+    TARGET_TEMP="$TEMP_FILE"
+    echo "Running in LIVE mode: Updating $TARGET_TODO"
 fi
 
 # Check if required directories and files exist
 if [ ! -d "$SOURCE_DIR" ]; then
-  echo "Error: Scripts directory not found at $SOURCE_DIR"
-  exit 1
+    echo "Error: Scripts directory not found at $SOURCE_DIR"
+    exit 1
 fi
 
 if [ ! -f "$TARGET_TODO" ]; then
-  echo "Error: ToDo.md not found at $TARGET_TODO"
-  exit 1
+    echo "Error: ToDo.md not found at $TARGET_TODO"
+    exit 1
 fi
 
 # Function to extract documentation
 get_Docs() {
-  local script_file="$1"
-  local output=""
+    local script_file="$1"
+    local output=""
 
-  if [[ "${script_file: -3}" != ".sh" ]]; then
-    return 1
-  fi
+    if [[ "${script_file: -3}" != ".sh" ]]; then
+        return 1
+    fi
 
-  local docs_file="$(basename "$script_file" .sh).md"
-  local script_docs="${DOCS_DIR}/${docs_file}"
+    local docs_file="$(basename "$script_file" .sh).md"
+    local script_docs="${DOCS_DIR}/${docs_file}"
 
-  if [ -f "$script_docs" ]; then
-    output="$script_docs"
-  elif [ -f "$DOCS_DIR/help.md" ]; then
-    output="$DOCS_DIR/help.md"
-  else
-    output="No documentation available"
-  fi
+    if [ -f "$script_docs" ]; then
+        output="$script_docs"
+    elif [ -f "$DOCS_DIR/help.md" ]; then
+        output="$DOCS_DIR/help.md"
+    else
+        output="$SCRIPT_DOCS_DEFAULT"  # Use default from .env_test
+    fi
 
-  echo "$output"
+    echo "$output"
 }
 
 # Function to extract info from script files
 extract_script_info() {
-  local file="$1"
-  local basename=$(basename "$file")
-  local name="${basename}"
-  local state="unknown"
-  local version="0.0.0"
-  local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
-  local docs=$(get_Docs "$file")
-  local author="unknown"
+    local file="$1"
+    local basename=$(basename "$file")
+    local name="${basename}"
+    local state="$SCRIPT_STATE_DEFAULT"  # Default from .env_test
+    local version="$SCRIPT_VERSION_DEFAULT"  # Default from .env_test
+    local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+    local docs=$(get_Docs "$file")
+    local author="$SCRIPT_AUTHOR_DEFAULT"  # Default from .env_test
 
-  while IFS= read -r line; do
-    if [[ "$line" =~ VERSION[[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
-      version="${BASH_REMATCH[1]}"
-    fi
-    if [[ "$line" =~ Author:[[:space:]]*(.*) ]]; then
-      author="${BASH_REMATCH[1]}"
-    fi
-    if [[ "$line" =~ State:[[:space:]]*(.*) ]]; then
-      state="${BASH_REMATCH[1]}"
-    fi
-  done <"$file"
+    while IFS= read -r line; do
+        if [[ "$line" =~ VERSION[[:space:]]*=[[:space:]]*\"?([0-9]+\.[0-9]+\.[0-9]+(-[0-9]+)?)\"? ]]; then
+            version="${BASH_REMATCH[1]}"
+        fi
+        if [[ "$line" =~ Author:[[:space:]]*(.*) ]]; then
+            author="${BASH_REMATCH[1]}"
+        fi
+        if [[ "$line" =~ State:[[:space:]]*(.*) ]]; then
+            state="${BASH_REMATCH[1]}"
+        fi
+    done < "$file"
 
-  echo "name:$name|state:$state|version:$version|size:$size|docs:$docs|author:$author"
+    echo "name:$name|state:$state|version:$version|size:$size|docs:$docs|author:$author"
 }
 
 # Build scripts object (associative array)
@@ -103,35 +103,46 @@ declare -A scripts
 
 index=1
 for script_file in "$SOURCE_DIR"/*; do
-  if [ -f "$script_file" ]; then
-    info=$(extract_script_info "$script_file")
-    scripts["SCRIPT_NAME($index)"]=$(echo "$info" | cut -d'|' -f1 | cut -d':' -f2)
-    scripts["SCRIPT_STATE($index)"]=$(echo "$info" | cut -d'|' -f2 | cut -d':' -f2)
-    scripts["VERSION($index)"]=$(echo "$info" | cut -d'|' -f3 | cut -d':' -f2)
-    scripts["SCRIPT_LOCATION($index)"]="$script_file"
-    scripts["SCRIPT_DOCS($index)"]=$(echo "$info" | cut -d'|' -f5 | cut -d':' -f2)
-    scripts["SCRIPT_AUTHOR($index)"]=$(echo "$info" | cut -d'|' -f6 | cut -d':' -f2)
-    ((index++))
-  fi
+    if [ -f "$script_file" ]; then
+        info=$(extract_script_info "$script_file")
+        scripts["SCRIPT_NAME($index)"]=$(echo "$info" | cut -d'|' -f1 | cut -d':' -f2)
+        scripts["SCRIPT_STATE($index)"]=$(echo "$info" | cut -d'|' -f2 | cut -d':' -f2)
+        scripts["VERSION($index)"]=$(echo "$info" | cut -d'|' -f3 | cut -d':' -f2)
+        scripts["SCRIPT_LOCATION($index)"]="$script_file"
+        scripts["SCRIPT_DOCS($index)"]=$(echo "$info" | cut -d'|' -f5 | cut -d':' -f2)
+        scripts["SCRIPT_AUTHOR($index)"]=$(echo "$info" | cut -d'|' -f6 | cut -d':' -f2)
+        ((index++))
+    fi
+done
+
+# Set defaults for undefined §VARIABLES
+for i in $(seq 1 99); do
+    [ -z "${scripts[SCRIPT_NAME($i)]}" ] && scripts["SCRIPT_NAME($i)"]="$SCRIPT_NAME_DEFAULT"
+    [ -z "${scripts[SCRIPT_STATE($i)]}" ] && scripts["SCRIPT_STATE($i)"]="$SCRIPT_STATE_DEFAULT"
+    [ -z "${scripts[VERSION($i)]}" ] && scripts["VERSION($i)"]="$SCRIPT_VERSION_DEFAULT"
+    [ -z "${scripts[SCRIPT_LOCATION($i)]}" ] && scripts["SCRIPT_LOCATION($i)"]="$SCRIPT_LOCATION_DEFAULT"
+    [ -z "${scripts[SCRIPT_DOCS($i)]}" ] && scripts["SCRIPT_DOCS($i)"]="$SCRIPT_DOCS_DEFAULT"
+    [ -z "${scripts[SCRIPT_AUTHOR($i)]}" ] && scripts["SCRIPT_AUTHOR($i)"]="$SCRIPT_AUTHOR_DEFAULT"
 done
 
 # Update ToDo.md with §VARIABLES
 while IFS= read -r line; do
-  new_line="$line"
-  for key in "${!scripts[@]}"; do
-    if [[ "$new_line" =~ §"$key" ]]; then
-      value="${scripts[$key]}"
-      new_line="${new_line//§$key/$value}"
-    fi
-  done
-  echo "$new_line"
-done <"$TARGET_TODO" >"$TARGET_TEMP"
+    new_line="$line"
+    for key in "${!scripts[@]}"; do
+        if [[ "$new_line" =~ §"$key" ]]; then
+            value="${scripts[$key]}"
+            new_line="${new_line//§$key/$value}"
+        fi
+    done
+    echo "$new_line"
+done < "$TARGET_TODO" > "$TARGET_TEMP"
 
 mv "$TARGET_TEMP" "$TARGET_TODO"
 
-if [ "$MODE" = "test" ] && [ "$DELETE_FLAG" = "true" ]; then
-  rm -rf "$TEST_DIR"
-  echo "Test directory $TEST_DIR deleted"
+# Handle options
+if [[ "$OPTIONS" =~ delete ]] && [ "$MODE" = "test" ]; then
+    rm -rf "$TEST_DIR"
+    echo "Test directory $TEST_DIR deleted"
 fi
 
 echo "Updated $TARGET_TODO successfully"
