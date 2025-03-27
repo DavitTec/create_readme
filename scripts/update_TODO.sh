@@ -1,6 +1,6 @@
 #!/bin/bash
 # update_TODO.sh
-VERSION="0.0.6" # Incremented from 0.0.5 (minor change for version tracking)
+VERSION="0.0.7"  # Incremented from 0.0.6 (minor change for test subfolder support)
 
 # Source package.json variables using grep/sed (no jq dependency)
 if [ -f "package.json" ]; then
@@ -33,14 +33,14 @@ PKG_AUTHOR=${PKG_AUTHOR:-$SCRIPT_AUTHOR_DEFAULT}
 OPTIONS=""
 while [[ $# -gt 0 ]]; do
     case $1 in
-    -d | --delete)
-        OPTIONS="$OPTIONS delete"
-        shift
-        ;;
-    *)
-        echo "Unknown option: $1"
-        exit 1
-        ;;
+        -d|--delete)
+            OPTIONS="$OPTIONS delete"
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
     esac
 done
 
@@ -49,6 +49,7 @@ if [ -d "$TEST_DIR" ]; then
     MODE="test"
     TARGET_TODO="$TEST_TODO_FILE"
     TARGET_TEMP="$TEST_TODO_FILE.tmp"
+    DOCS_DIR="$TEST_DIR"  # Use test subfolder for docs in test mode
     echo "Running in TEST mode: Updating $TARGET_TODO"
 else
     MODE="live"
@@ -81,7 +82,7 @@ extract_script_info() {
     local state="$SCRIPT_STATE_DEFAULT"
     local version="$SCRIPT_VERSION_DEFAULT"
     local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
-    local docs="${DOCS_DIR}/${basename%.sh}_help.md" # Default to help.md
+    local docs="${DOCS_DIR}/${basename%.sh}_help.md"  # Use DOCS_DIR dynamically
     local author="$SCRIPT_AUTHOR_DEFAULT"
     local readme="${DOCS_DIR}/${basename%.sh}_Readme.md"
     local dev_doc="${DOCS_DIR}/${basename%.sh}_Developer.md"
@@ -97,7 +98,7 @@ extract_script_info() {
         if [[ "$line" =~ State:[[:space:]]*(.*) ]]; then
             state="${BASH_REMATCH[1]}"
         fi
-    done <"$file"
+    done < "$file"
 
     # Get doc versions
     local readme_version=$(get_Doc_Version "$readme")
@@ -146,7 +147,7 @@ done
 # Generate ToDo_TEST_.md template in test mode
 if [ "$MODE" = "test" ]; then
     mkdir -p "$TEST_DIR"
-    cat <<EOF >"$TARGET_TODO"
+    cat << EOF > "$TARGET_TODO"
 # Todo
 ## Package Info
 - Package Version: $PKG_VERSION
@@ -169,8 +170,8 @@ This is a TEST file to check capture and replacement of all variables
 EOF
 
     # Dynamically add test sections for each script (including index 0)
-    for i in $(seq 0 $((index - 1))); do
-        cat <<EOF >>"$TARGET_TODO"
+    for i in $(seq 0 $((index-1))); do
+        cat << EOF >> "$TARGET_TODO"
 
 ### TEST for Script $i
 
@@ -199,7 +200,7 @@ while IFS= read -r line; do
         fi
     done
     echo "$new_line"
-done <"$TARGET_TODO" >"$TARGET_TEMP"
+done < "$TARGET_TODO" > "$TARGET_TEMP"
 
 mv "$TARGET_TEMP" "$TARGET_TODO"
 

@@ -1,9 +1,15 @@
 {
   "name": "create_readme",
-  "version": "0.0.7-3",
+  "version": "0.0.7-4",
   "description": "Script and templates to help you Create a README for a new or current project.",
   "homepage": "https://github.com/DavitTec/create_readme#readme",
   "main": "index.js",
+  "settings": {
+    "CASE_SENSITIVE": true,
+    "LOC": "UK",
+    "LANG": "en-GB",
+    "EOL": "LF"
+  },
   "scripts": {
     "todo": "bash ./scripts/update_TODO.sh",
     "test": "echo \"Error: no test specified\" && exit 1",
