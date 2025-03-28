@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # src/ex_bash_rematch.sh
-# version 0.0.1-8
+# version 0.0.1-9
 # lng=en_GB  #(British English, Left to Right)
 
 export LC_ALL=C.UTF-8
@@ -33,7 +33,7 @@ keyvalue() {
 # Function to check pattern match and set global variables
 checkPattern() {
   local string=$1
-  pattern='^(h[a-z]+)=*(w[a-z]+)$'
+  pattern='^(h[a-z]+)=*(w[a-z_]+)$'
   if [[ $string =~ $pattern ]]; then
     matched="Yes"
     group1=${BASH_REMATCH[1]}
@@ -56,26 +56,26 @@ for ((i = 1; i <= 4; i++)); do
   mystring="TEST_$i"
   test_case=$mystring
   input_string=${!mystring}
-  
+
   # Process the string using keyvalue function
   string=$(keyvalue "$input_string")
   key=${string%%=*}
   value_replaced=${string#*=}
   processed_string=${string,,}
-  
+
   # Check the pattern
   checkPattern "$processed_string"
-  
+
   # Construct pattern match column
   if [ "$matched" == "Yes" ]; then
     pattern_match="Match: groups '$group1', '$group2'"
   else
     pattern_match="Not found!"
   fi
-  
+
   # Print the row
   printf "%-10s | %-25s | %-15s | %-25s | %-25s | %-30s\n" \
     "$test_case" "$input_string" "$key" "$value_replaced" "$processed_string" "$pattern_match"
-  
+
   echo
 done

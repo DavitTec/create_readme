@@ -55,13 +55,15 @@ done
 if [ -d "$TEST_DIR" ]; then
     MODE="test"
     TARGET_TODO="$TEST_TODO_FILE"
-    TARGET_TEMP="$TEST_TODO_FILE.tmp"
+    ##TODO; TARGET_TEMP NOT USED
+    # TARGET_TEMP="$TODO_FILE.tmp"
     DOCS_DIR="$TEST_DIR"
     echo "Running in TEST mode: Updating $TARGET_TODO"
 else
     MODE="live"
     TARGET_TODO="$TODO_FILE"
-    TARGET_TEMP="$TODO_FILE.tmp"
+   ##TODO; TARGET_TEMP NOT USED
+   # TARGET_TEMP="$TODO_FILE.tmp"
     echo "Running in LIVE mode: Updating $TARGET_TODO"
 fi
 
@@ -70,6 +72,15 @@ if [ ! -d "$SOURCE_DIR" ]; then
     echo "Error: Scripts directory not found at $SOURCE_DIR"
     exit 1
 fi
+
+# Line-by-Line Parsing
+info=$(extract_script_info "$script_file" "$DOCS_DIR" "$PKG_AUTHOR" "$CASE_SENSITIVE")
+while IFS="=" read -r key value; do
+    scripts["SCRIPT_${key^^}($index)"]="$value"
+done <<< "$info"
+scripts["SCRIPT_LOCATION($index)"]="$script_file"
+((index++))
+
 
 # Build scripts object
 declare -A scripts
@@ -90,7 +101,20 @@ for script_file in "$SOURCE_DIR"/*; do
         scripts["SCRIPT_LOCATION($index)"]="$script_file"
         ((index++))
     fi
+    #TODO:  debuggering error remove follonw echo when GOOD
+    echo "Debug: Setting SCRIPT_NAME($index) to $value"
+
+
+
 done
+
+# TODO: Debugging TEST section
+for key in "${!scripts[@]}"; do
+    echo "$key: ${scripts[$key]}"
+done
+
+
+
 
 # Generate ToDo_TEST_.md
 if [ "$MODE" = "test" ]; then
