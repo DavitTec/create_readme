@@ -1,8 +1,10 @@
+
+
 # Create Readme
 
 🔥 Script and templates to help you create a README for a new or current project.
 
-Version 0.0.5
+Version 0.0.7-7
 
 | **HOME** | [DEVELOPMENT](./docs/Development.md)  | [HELP](./docs/help.md) | [ISSUES](./docs/issues.md) | [ToDo](./docs/ToDo.md) |
 
@@ -24,11 +26,24 @@ Built by DAVIT, pioneers of digital validation and heritage preservation, with t
 
 ### Insert 
 
-to deploy the  "insert_readme.sh" for CAJA scripts run the following:
+Scripts are created in the [./scripts](./scrips) folder.
+
+To deploy the  CAJA scripts onto your system, run the following command:
 
 ```bash
-npm run deploy:caja
+pnpm run deploy
 ```
+
+The current two scripts are:
+
+1. INSERT README :  This offers a quick insert [README.md]() template in target folder without prompting and renames if (currentdata)__README.md one exists.
+2. CREATE README : This offer a menu should of different Templates to choose from. [FIX: need option not to overwrite or rename]
+
+If Templates folder does not exist or basic README.md template does not exist, then these will be created and planed in folder
+
+***$HOME/$USER/Templates/markdown***
+
+
 
 ---
 

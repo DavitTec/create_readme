@@ -12,9 +12,6 @@ SOURCE_DIR="./scripts"
 SCRIPTS=(
   "insert_readme:INSERT README"
   "create_readme:CREATE README"
-  "test_zenity:TEST ZENITY"
-  "test_caja:TEST CAJA"
-  "test_caja_zenity:TEST CAJA ZENITY"
 )
 
 # Backup Before Deploying
@@ -23,7 +20,6 @@ if [ -d "$CAJA_SCRIPTS_DIR" ]; then
   echo "Backing up existing scripts to $BACKUP_DIR"
   cp -r "$CAJA_SCRIPTS_DIR" "$BACKUP_DIR"
 fi
-
 
 # Check if CAJA is installed
 if ! command -v caja &>/dev/null; then

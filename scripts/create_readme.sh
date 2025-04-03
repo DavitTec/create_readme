@@ -1,10 +1,11 @@
 #!/bin/bash
 
+# 
 # create_readme.sh
-VERSION="0.0.6-15"
+VERSION="0.0.6-17"
 TEMPLATE_DIR="$HOME/Templates/markdown"
 REPO_URL="https://github.com/DavitTec/create_readme"
-DEFAULT_TEMPLATE="basic"
+DEFAULT_TEMPLATE="README"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TESTDIR="$TEMPLATE_DIR/test"
 DEBUG=false
